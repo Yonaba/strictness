@@ -17,6 +17,17 @@ local error = error
 -- Private helpers
 -- ===================
 
+-- Lua reserved keywords
+local luaKeyword = {
+  ['and'] = true,     ['break'] = true,   ['do'] = true,
+  ['else'] = true,    ['elseif'] = true,  ['end'] = true ,
+  ['false'] = true,   ['for'] = true,     ['function'] = true,
+  ['if'] = true,      ['in'] = true,      ['local'] = true ,
+  ['nil'] = true,     ['not'] = true ,    ['or'] = true,
+  ['repeat'] = true,  ['return'] = true,  ['then'] = true ,
+  ['true'] = true ,   ['until'] = true ,  ['while'] = true,
+}
+
 -- Register for declared globals, defined as a table
 -- with weak values.
 local declared_globals = setmetatable({},{__mode = 'v'})
@@ -31,7 +42,7 @@ local function err(msg)  return error(msg, 3) end
 local function assert_type(var, expected_type, argn)
   local var_type = type(var)
   assert(var_type == expected_type,
-    ('Bad argument #%d to global (%s expected, got %s')
+    ('Bad argument #%d to global (%s expected, got %s)')
       :format(argn or 1, expected_type, var_type))
 end
 
@@ -40,14 +51,27 @@ local function is_declared(varname)
   return declared_globals[varname]
 end
 
+-- Checks if the passed-in string can be a valid Lua identifier
+local function is_valid_identifier(iden)
+  return iden:match('^[%a_]+[%w_]*$') and not luaKeyword[iden]
+end
+
 -- ==========================
 -- Module exported functions
 -- ==========================
 
--- Allows the declaration of the global variable "varname"
-function global(varname)
-  assert_type(varname, 'string')
-  declared_globals[varname] = true
+-- Allows the declaration of passed in varnames
+function global(...)
+  local vars = {...}
+  assert(#vars > 0, 
+    'bad argument #1 to global (expected strings, got nil)')
+  for i,varname in ipairs({...}) do
+    assert_type(varname, 'string',i)
+    assert(is_valid_identifier(varname),
+      ('bad argument #%d to global. %s is not a valid Lua identifier')
+        :format(i, varname))
+    declared_globals[varname] = true
+  end
 end
 
 -- Allows the given function to write globals
@@ -75,7 +99,7 @@ do
     setmetatable(_G,_G_mt)
   end
 
-  -- Locks accessing of undeclared globals
+  -- Locks access to undeclared globals
   _G_mt.__index = function(env, varname)
     if not is_declared(varname) then
       err(('Attempt to read undeclared global variable "%s"')
