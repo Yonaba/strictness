@@ -32,16 +32,29 @@ end
 -- Collects all existing keys in _G
 local old_G = collect(_G)
 
+-- Setting a fake metatable to _G, for the Environment context
+local fake_mt = {
+  __index = function() end,
+  __newindex = function() end,
+  __tostring = function() return "fake_mt" end,
+  a_field = 1,
+  another_field = true,
+}
+
+-- Caching fake_mt field to track changes later
+local old_fake_mt_index = fake_mt.__index
+local old_fake_mt_newindex = fake_mt.__newindex
+local old_fake_mt_a_field = fake_mt.a_field
+local old_fake_mt_another_field = fake_mt.another_field
 
 context('Requiring strictness', function()
 
   test('Declaring test suite globals', function()
     
     local globs = diff(_G, old_G)
+    setmetatable(_G, fake_mt)    
     require 'strictness'
     
-    for _,var in ipairs(globs) do
-      -- print('declaring', var)
       global (var)
     end
     
@@ -222,5 +235,55 @@ context('Functions declaring globals', function()
     assert_equal(triple, 45)
     
   end)  
+  
+end)
+
+context('Environment', function()
+  
+  test('preserves a possible existing metatable for _G', function()
+  
+    assert_equal(getmetatable(_G), fake_mt)
+
+  end)
+  
+  test('but overwrites __index/__newindex in the env table', function()
+    
+    assert_not_equal(fake_mt.__index, old_fake_mt_index)
+    assert_not_equal(fake_mt.__newindex, old_fake_mt_newindex)
+  
+  end)
+
+  test('other existing fields are preserved', function()
+    
+    assert_equal(fake_mt.a_field, old_fake_mt_a_field)
+    assert_equal(fake_mt.another_field, old_fake_mt_another_field)
+    assert_equal(tostring(_G), 'fake_mt')
+  
+  end)
+  
+  test('strictness can be required even if _G was previously locked', function()
+    
+    package.loaded['strictness'] = nil
+    setmetatable(_G, {__newindex = function() error('Cannot write in _G') end})
+    
+    local function set() var = true end
+    
+    assert_error(var)
+    
+    local globs = diff(_G, old_G)
+    require 'strictness'
+    for _,var in ipairs(globs) do
+      global (var)
+    end
+    
+    local function set() 
+      global "var"
+      var = true 
+    end
+    
+    assert_not_error(set)
+    assert_true(var)
+  
+  end)
   
 end)
