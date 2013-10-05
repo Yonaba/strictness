@@ -57,13 +57,13 @@ local function is_valid_identifier(iden)
 end
 
 -- ==========================
--- Module exported functions
+-- Module functions
 -- ==========================
 
 -- Allows the declaration of passed in varnames
-function global(...)
+local function declare_global(...)
   local vars = {...}
-  assert(#vars > 0, 
+  assert(#vars > 0,
     'bad argument #1 to global (expected strings, got nil)')
   for i,varname in ipairs({...}) do
     assert_type(varname, 'string',i)
@@ -75,7 +75,7 @@ function global(...)
 end
 
 -- Allows the given function to write globals
-function globalize(f)
+local function declare_global_func(f)
   assert_type(f, 'function')
   return function(...)
     local old_index, old_newindex = _G_mt.__index, _G_mt.__newindex
@@ -91,12 +91,15 @@ end
 -- ==========================
 
 do
+
+  -- Catches the current env
+  local ENV = getfenv()
   
-  -- Preserves a possible existing metatable for _G 
-  _G_mt = getmetatable(_G)
+  -- Preserves a possible existing metatable for the current env
+  _G_mt = getmetatable(ENV)
   if not _G_mt then
     _G_mt = {}
-    setmetatable(_G,_G_mt)
+    setmetatable(ENV,_G_mt)
   end
 
   -- Locks access to undeclared globals
@@ -108,7 +111,7 @@ do
     return rawget(env, varname)
   end
 
-  -- Locks assignment of undeclared globals  
+  -- Locks assignment of undeclared globals
   _G_mt.__newindex = function(env, varname, value)
     if not is_declared(varname) then
       err(('Attempt to assign undeclared global variable "%s"')
@@ -116,5 +119,8 @@ do
     end
     rawset(env, varname, value)
   end
+  
+  rawset(ENV, 'global', declare_global)
+  rawset(ENV, 'globalize', declare_global_func)
 
 end
