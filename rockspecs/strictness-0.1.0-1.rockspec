@@ -7,7 +7,7 @@ source = {
 description = {
    summary = "Tracks declaration and assignment of globals in Lua",
    detailed = [[
-    "Strictness is yet another pure Lua module (compatible with Lua 5.1 and 5.2) 
+    Strictness is yet another pure Lua module (compatible with Lua 5.1 and 5.2) 
     which stands for tracking global variables declaration and assignments in your code.
     It enforces to declare globals using a new statement, before assignment. As such, it
     helps having a better control on the scope of variables and therefore minimizes the 
