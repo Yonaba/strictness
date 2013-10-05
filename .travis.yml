@@ -1,10 +1,15 @@
 language: erlang
 
 env:
-  - LUA=""
-  - LUA="luajit"
+  matrix:
+    - LUA=lua5.1 LUA_INCDIR=/usr/include/lua5.1
+    - LUA=lua5.2 LUA_INCDIR=/usr/include/lua5.2
+    - LUA=luajit-2.0.0-beta9 LUA_INCDIR=/usr/include/luajit-2.0
 
 install:
+  - sudo apt-get install lua5.1
+  - sudo apt-get install lua5.2
   - sudo apt-get install luajit
 
-script: "lua specs/tests.lua"
+script:
+  - $LUA specs/tests.lua
