@@ -9,7 +9,7 @@ Place the file [strictness.lua](http://github.com/Yonaba/strictness/blob/master/
 require "strictness"
 ````
 
-From now on, it will no longer be possible to create/assign globals. The floowing code:
+From now on, it will no longer be possible to create/assign globals. The following code:
 
 ```lua
 require "strictness"
@@ -30,7 +30,7 @@ will create an error:
 
 ### Creating global variables
 
-With *strictness* enabled, global variables must be declared first with a new function named `global`.
+With *strictness* enabled, global variables must be declared first via a new function named `global`.
 
 ```lua
 global "a"
@@ -62,7 +62,7 @@ global ({}) --> {} is not a string
 
 ### Functions creating globals
 
-Some functions, when run, can create globals. For instance, you might want to use [require](http://pgl.yoyo.org/luai/i/require)/[loadfile](http://pgl.yoyo.org/luai/i/loadfile)/[dofile](http://pgl.yoyo.org/luai/i/dofile) to call and execute some external code which is likely to create globals. In that case, if *strictness* is enabled, those functions will fail to execute when trying to assign those globals.
+Some functions create globals when being run. For instance, you might want to use [require](http://pgl.yoyo.org/luai/i/require)/[loadfile](http://pgl.yoyo.org/luai/i/loadfile)/[dofile](http://pgl.yoyo.org/luai/i/dofile) to call and execute some external code which is likely to create globals. In that case, if *strictness* is enabled, those functions will fail to execute when trying to assign those globals.
 
 ````lua
 require 'strictness'
@@ -83,7 +83,7 @@ setGlobals()
 	  [C]: ?
     Exit code: 1
 
-To avoid this, *strictness* provides another function named `globalize`. When passing a function to `globalize`, it returns a similar (wrapped) function which is free to write in the global environment.
+To work around this issue, *strictness* provides another function named `globalize`. When passing a function to `globalize`, it returns a similar (wrapped) function which is free to write in the global environment.
 
 ````lua
 require 'strictness'
