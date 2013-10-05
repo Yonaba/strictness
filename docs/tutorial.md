@@ -3,7 +3,7 @@ strictness tutorial
 
 ### Requiring the module
 
-Place the file [strictness.lua](strictness.lua) in your project and call it with [require](http://pgl.yoyo.org/luai/i/require).
+Place the file [strictness.lua](http://github.com/Yonaba/strictness/blob/master/strictness.lua) in your project and call it with [require](http://pgl.yoyo.org/luai/i/require).
 
 ```lua
 require "strictness"
