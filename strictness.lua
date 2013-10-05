@@ -12,6 +12,7 @@ local rawget = rawget
 local rawset = rawset
 local unpack = unpack
 local error = error
+local getfenv = getfenv
 
 -- ===================
 -- Private helpers
@@ -93,7 +94,7 @@ end
 do
 
   -- Catches the current env
-  local ENV = getfenv()
+  local ENV = _VERSION:match('5.2') and _G or getfenv()
   
   -- Preserves a possible existing metatable for the current env
   _G_mt = getmetatable(ENV)
