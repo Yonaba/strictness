@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 -- ==============================================
 -- Specification test suite for strictness
 -- Uses custom test framework (see framework.lua)
