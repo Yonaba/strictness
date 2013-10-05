@@ -7,7 +7,6 @@
 local setmetatable = setmetatable
 local getmetatable = getmetatable
 local type = type
-local assert = assert
 local rawget = rawget
 local rawset = rawset
 local unpack = unpack
@@ -37,14 +36,21 @@ local declared_globals = setmetatable({},{__mode = 'v'})
 local _G_mt
 
 -- A custom error function
-local function err(msg)  return error(msg, 3) end
+local function err(msg, level)  return error(msg, level or 3) end
+
+-- Custom assert with error level depth
+local function assert(cond, msg, level)
+  if not cond then
+    return err(msg, level or 4)
+  end
+end
 
 -- Custom argument type assertion helper
-local function assert_type(var, expected_type, argn)
+local function assert_type(var, expected_type, argn, level)
   local var_type = type(var)
   assert(var_type == expected_type,
     ('Bad argument #%d to global (%s expected, got %s)')
-      :format(argn or 1, expected_type, var_type))
+      :format(argn or 1, expected_type, var_type), level)
 end
 
 -- Checks in the register if the given global was declared
@@ -67,9 +73,9 @@ local function declare_global(...)
   assert(#vars > 0,
     'bad argument #1 to global (expected strings, got nil)')
   for i,varname in ipairs({...}) do
-    assert_type(varname, 'string',i)
+    assert_type(varname, 'string',i, 5)
     assert(is_valid_identifier(varname),
-      ('bad argument #%d to global. %s is not a valid Lua identifier')
+      ('bad argument #%d to global. "%s" is not a valid Lua identifier')
         :format(i, varname))
     declared_globals[varname] = true
   end
@@ -77,7 +83,7 @@ end
 
 -- Allows the given function to write globals
 local function declare_global_func(f)
-  assert_type(f, 'function')
+  assert_type(f, 'function', nil, 5)
   return function(...)
     local old_index, old_newindex = _G_mt.__index, _G_mt.__newindex
     _G_mt.__index, _G_mt.__newindex = nil, nil
