@@ -15,7 +15,7 @@ With *strictness*, one is forced to declare globals using a new function, `globa
 
 ####Git
 
-    git clone git@github.com/Yonaba/strictness
+    git clone git://github.com/Yonaba/strictness
 
 ####Download
 
