@@ -60,7 +60,7 @@ Feel free to check those alternate implementations, from with *strictness* takes
   
 ##License
 This work is under [MIT-LICENSE](http://www.opensource.org/licenses/mit-license.php)<br/>
-Copyright (c) 2012-2013 Roland Yonaba
+Copyright (c) 2013 Roland Yonaba
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the
