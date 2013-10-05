@@ -36,7 +36,7 @@ or
 
 ##Usage
 
-Place the file [strictness.lua](strictness.lua) in your project and call it with [require](http://pgl.yoyo.org/luai/i/require)
+Place the file [strictness.lua](strictness.lua) in your project and call it with [require](http://pgl.yoyo.org/luai/i/require).
 
     require "strictness"
 
