@@ -3,7 +3,9 @@ strictness
 
 In Lua, one must use the `local` statement to create a local variable. On the other hand, global variables do not need assignment, Lua being [global by default](http://www.lua.org/pil/1.2.html). <br>
 
-*strictness* is yet another pure Lua module (compatible with Lua 5.1 and 5.2) which stands for tracking global variables declaration and assignments in your code.<br> With *strictness*, one is forced to declare globals using a new function, `global`. As such, it helps having a better control on the scope of  variables and therefore minimize the global environment namespace pollution.
+*strictness* is yet another pure Lua module (compatible with Lua 5.1 and 5.2) which stands for tracking global variables declaration and assignments in your code.<br>
+
+With *strictness*, one is forced to declare globals using a new function, `global`. As such, it helps having a better control on the scope of  variables and therefore minimizes the global environment namespace pollution.
 
 *strictness* is compatible with Lua [5.1](http://www.lua.org/versions.html#5.1) and Lua [5.2](http://www.lua.org/versions.html#5.2).
 
