@@ -6,6 +6,5 @@ env:
 
 install:
   - sudo apt-get install luajit
-  - sudo apt-get install luarocks
 
-script: "specs/tests.lua"
+script: "lua specs/tests.lua"
