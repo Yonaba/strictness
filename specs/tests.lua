@@ -55,6 +55,7 @@ context('Requiring strictness', function()
     setmetatable(_G, fake_mt)    
     require 'strictness'
     
+    for _,var in ipairs(globs) do
       global (var)
     end
     
