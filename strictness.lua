@@ -17,6 +17,9 @@ local getfenv = getfenv
 -- Private helpers
 -- ===================
 
+-- Detecting Lua52
+local _LUA52 = _VERSION:match('5.2')
+
 -- Lua reserved keywords
 local luaKeyword = {
   ['and'] = true,     ['break'] = true,   ['do'] = true,
@@ -27,6 +30,10 @@ local luaKeyword = {
   ['repeat'] = true,  ['return'] = true,  ['then'] = true ,
   ['true'] = true ,   ['until'] = true ,  ['while'] = true,
 }
+
+if _LUA52 then
+  luaKeyword['goto'] = true
+end
 
 -- Register for declared globals, defined as a table
 -- with weak values.
@@ -100,7 +107,7 @@ end
 do
 
   -- Catches the current env
-  local ENV = _VERSION:match('5.2') and _G or getfenv()
+  local ENV = _LUA52 and _G or getfenv()
   
   -- Preserves a possible existing metatable for the current env
   _G_mt = getmetatable(ENV)
