@@ -32,6 +32,10 @@ local reserved = {
   'function', 'local', 'or', 'then', 'while'
 }
 
+if _VERSION:match('5.2') then 
+  reserved[#reserved+1] = 'goto'
+end
+
 -- Some non-valid identifiers
 local wrong_identifiers = {'5_a', '.e_a', 'a,r', 'e+*z', '$b'}
 
@@ -54,6 +58,7 @@ test.assert_equal('global is a function', type(global), 'function')
 test.assert_equal('globalize is a function', type(globalize), 'function')
 
 print(decorate('Globals:'))
+test.assert_error('An attempt to read an undeclared global raises an error', function() print(x) end)
 test.assert_error('Assigning undeclared global raises an error', function() x = true end)
 test.assert_error('Assigning nil to undeclared global raises an error', function() x = nil end)
 test.assert_not_error('Should be declared before assignment via global()', function() global ("x"); x = true end)
