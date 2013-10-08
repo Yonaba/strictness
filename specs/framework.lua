@@ -28,42 +28,42 @@ end
 
 -- Test passing when v is nil
 local function assert_nil(msg, v, level)
-  assert(v==nil, ('Test failed, expected %s to be nil')
+  assert(v==nil, ('Test failed, expected "%s" to be nil')
     :format(tostring(v)))
   output(msg, level)
 end
 
 -- Test passing when v is not nil
 local function assert_not_nil(msg, v, level)
-  assert(v~=nil, ('Test failed, expected %s not to be nil')
+  assert(v~=nil, ('Test failed, expected "%s" not to be nil')
     :format(tostring(v)))
   output(msg, level)
 end
 
 -- Test passing when v is true
 local function assert_true(msg, v, level)
-  assert(v==true, ('Test failed, expected %s to be true')
+  assert(v==true, ('Test failed, expected "%s" to be true')
     :format(tostring(v)))
   output(msg, level)
 end
 
 -- Test passing when v is false
 local function assert_false(msg, v, level)
-  assert(v==false, ('Test failed, expected %s to be false')
+  assert(v==false, ('Test failed, expected "%s" to be false')
     :format(tostring(v)))
   output(msg, level)
 end
 
 -- Test passing when a == b
 local function assert_equal(msg, a, b, level)
-  assert(a == b, ('Test failed, expected %s to be equal to %s')
+  assert(a == b, ('Test failed, expected "%s" to be equal to "%s"')
     :format(tostring(a), tostring(b)))
   output(msg, level)
 end
 
 -- Test passing when a ~= b
 local function assert_not_equal(msg, a, b, level)
-  assert(a ~= b, ('Test failed, expected %s not to be equal to %s')
+  assert(a ~= b, ('Test failed, expected "%s" not to be equal to "%s"')
     :format(tostring(a), tostring(b)))
   output(msg, level)
 end

@@ -133,8 +133,10 @@ do
     end
     rawset(env, varname, value)
   end
-  
-  rawset(ENV, 'global', declare_global)
-  rawset(ENV, 'globalize', declare_global_func)
 
 end
+
+return {
+  global = declare_global,
+  globalize = declare_global_func
+}
