@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Strictness by Yonaba</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Strictness</h1>
+        <p>Tracks declaration and assignment of globals in Lua</p>
+
+        <p class="view"><a href="https://github.com/Yonaba/strictness">View the Project on GitHub <small>Yonaba/strictness</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Yonaba/strictness/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Yonaba/strictness/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Yonaba/strictness">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="strictness" class="anchor" href="#strictness"><span class="octicon octicon-link"></span></a>strictness</h1>
+
+<p><a href="https://travis-ci.org/Yonaba/strictness"><img src="https://travis-ci.org/Yonaba/strictness.png" alt="Build Status"></a></p>
+
+<p>In Lua, one must use the <code>local</code> statement to create a local variable. On the other hand, global variables do not need assignment, Lua being <a href="http://www.lua.org/pil/1.2.html">global by default</a>. <br></p>
+
+<p><em>strictness</em> is yet another pure Lua module (compatible with Lua 5.1 and 5.2) which stands for tracking global variables declaration and assignments in your code.<br></p>
+
+<p>With <em>strictness</em>, one is forced to declare globals using a new function, <code>global</code>. As such, it helps having a better control on the scope of  variables and therefore minimizes the global environment namespace pollution.</p>
+
+<p><em>strictness</em> is compatible with Lua <a href="http://www.lua.org/versions.html#5.1">5.1</a> and Lua <a href="http://www.lua.org/versions.html#5.2">5.2</a>.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<h4>
+<a name="git" class="anchor" href="#git"><span class="octicon octicon-link"></span></a>Git</h4>
+
+<pre><code>git clone git://github.com/Yonaba/strictness
+</code></pre>
+
+<h4>
+<a name="download" class="anchor" href="#download"><span class="octicon octicon-link"></span></a>Download</h4>
+
+<ul>
+<li>See <a href="https://github.com/Yonaba/strictness/releases">releases</a>
+</li>
+</ul><h4>
+<a name="luarocks" class="anchor" href="#luarocks"><span class="octicon octicon-link"></span></a>LuaRocks</h4>
+
+<pre><code>luarocks install strictness
+</code></pre>
+
+<h4>
+<a name="moonrocks" class="anchor" href="#moonrocks"><span class="octicon octicon-link"></span></a>MoonRocks</h4>
+
+<pre><code>moonrocks install strictness
+</code></pre>
+
+<p>or </p>
+
+<pre><code>luarocks install --server=http://rocks.moonscript.org/manifests/Yonaba strictness
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Place the file <a href="strictness.lua">strictness.lua</a> in your project and call it with <a href="http://pgl.yoyo.org/luai/i/require">require</a>.</p>
+
+<pre><code>require "strictness"
+</code></pre>
+
+<h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>See <a href="docs/tutorial.md">tutorial.md</a>.</p>
+
+<h2>
+<a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
+
+<p>This project includes a custom test framework and specifications tests. To run these tests, run the following from the project root folder:</p>
+
+<pre><code>lua specs/tests.lua
+</code></pre>
+
+<h2>
+<a name="alternative-implementations" class="anchor" href="#alternative-implementations"><span class="octicon octicon-link"></span></a>Alternative implementations</h2>
+
+<p>Feel free to check those alternate implementations, from with <em>strictness</em> takes some inspiration:</p>
+
+<ul>
+<li>
+<a href="http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua">strict.lua</a>, which is included in the official Lua distribution</li>
+<li>
+<a href="https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua">pl.strict</a>, which is part of <a href="https://github.com/stevedonovan">S. Donovan</a>'s <a href="https://github.com/stevedonovan/Penlight">Penlight</a>.</li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>This work is under <a href="http://www.opensource.org/licenses/mit-license.php">MIT-LICENSE</a><br>
+Copyright (c) 2013 Roland Yonaba</p>
+
+<pre><code>Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</code></pre>
+
+<p><a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/Yonaba/strictness/trend.png" alt="Bitdeli Badge"></a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Yonaba">Yonaba</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-33850683-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
