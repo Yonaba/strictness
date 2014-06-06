@@ -18,7 +18,7 @@ before_install:
   - sudo luarocks install luacov-coveralls --server=http://rocks.moonscript.org/dev
 
 script:
-  - lua$LUA specs/tests.lua
+  - lua$LUA_SFX -lluacov specs/tests.lua
   
 after_success:
   - luacov-coveralls -e framework
