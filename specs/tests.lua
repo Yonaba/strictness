@@ -5,7 +5,7 @@
 -- ==============================================
 
 -- Test framework
-local test = require 'specs/framework'
+local test = require 'specs.framework'
 
 -- Aliases
 local loaded = package.loaded
