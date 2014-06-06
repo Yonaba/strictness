@@ -2,6 +2,8 @@ strictness
 ===========
 
 [![Build Status](https://travis-ci.org/Yonaba/strictness.png)](https://travis-ci.org/Yonaba/strictness)
+[![Coverage Status](https://coveralls.io/repos/Yonaba/strictness/badge.png?branch=master)](https://coveralls.io/r/Yonaba/strictness?branch=master)
+[![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE)
 
 In Lua, one must use the `local` statement to create a local variable. On the other hand, global variables do not need assignment, Lua being [global by default](http://www.lua.org/pil/1.2.html). <br>
 
