@@ -4,11 +4,30 @@
 -- v0.2.0 - compatible Lua 5.1, 5.2
 -- ==========================================
 
-local _LUA52 = _VERSION:match('5.2')
+local _LUA52 = _VERSION:match('Lua 5.2')
 local setmetatable, getmetatable = setmetatable, getmetatable
 local rawget, rawget = rawget, rawget
 local unpack = _LUA52 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
+local getfenv = getfenv
+
+----------------------------- Private definitions -----------------------------
+
+if _LUA52 then
+  -- Provide a replacement for getfenv in Lua 5.2, using the debug library
+  -- Taken from: http://lua-users.org/lists/lua-l/2010-06/msg00313.html
+  -- Slightly modified to handle f being nil and return _ENV if f is global.
+  getfenv = function(f)
+      f = (type(f) == 'function' and f or debug.getinfo((f or 0) + 1, 'f').func)
+      local name, val
+      local up = 0
+      repeat
+          up = up + 1
+          name, val = debug.getupvalue(f, up)
+      until name == '_ENV' or name == nil
+      return val~=nil and val or _ENV
+  end
+end
 
 -- Lua reserved keywords
 local is_reserved_keyword = {
@@ -44,6 +63,8 @@ local function swap_key_and_values(t, v)
   for i, val in  ipairs(t) do _t[val] = i and v end
   return _t
 end
+
+------------------------------- Module functions ------------------------------
 
 -- Makes a given table strict
 local function make_table_strict(t, ...)
@@ -102,50 +123,47 @@ end
 -- Makes a given table unstrict
 local function make_table_unstrict(t)
   if is_table_strict(t) then
-    mt.__index = mt.__predefined_index
-    mt.__newindex = mt.__predefined_newindex
-    mt.__strict = nil
-    mt.__allowed = nil
-    mt.__predefined_index = nil
-    mt.__predefined_newindex = nil
+    mt.__index, mt.__newindex = mt.__predefined_index, mt.__predefined_newindex
+    mt.__strict, mt.__allowed = nil, nil
+    mt.__predefined_index, mt.__predefined_newindex = nil, nil
   end
   return t
 end
 
 -- Makes a given function strict
--- Will run un strict mode whether or not env is strict.
-local function make_function_strict(f, ENV)
+-- Will run in strict mode whether or not its env is strict.
+local function make_function_strict(f)
   return function(...)
-    local _ENV = ENV or (_LUA52 and _ENV or getfenv(1))
-    local was_patched = is_table_strict(_ENV)
-    if not was_patched then make_table_strict(_ENV) end
+    local ENV = getfenv(f)
+    local was_strict = is_table_strict(ENV)
+    if not was_strict then make_table_strict(ENV) end
     local results = {f(...)}
-    if not was_patched then make_table_unstrict(_ENV) end
+    if not was_strict then make_table_unstrict(ENV) end
     return unpack(results)
   end
 end
 
 -- Makes a given function sloppy
--- Will overrides strict rules of a given env
-local function make_function_sloppy(f,ENV)
+-- Will override strict rules of its env
+local function make_function_sloppy(f)
   return function(...)
-    local _ENV = ENV or (_LUA52 and _ENV or getfenv(1))
-    local was_patched = is_table_strict(_ENV)
-    make_table_unstrict(_ENV)
+    local ENV = getfenv(f)
+    local was_strict = is_table_strict(ENV)
+    make_table_unstrict(ENV)
     local results = {f(...)}
-    if was_patched then make_table_strict(_ENV) end
+    if was_strict then make_table_strict(ENV) end
     return unpack(results)
   end
 end
 
--- Returns the result of function call in strict mode in an env
-local function run_strict(f, env,...)
-  return make_function_strict(f,env)(...)
+-- Returns the result of function call in strict mode in its env
+local function run_strict(f,...)
+  return make_function_strict(f)(...)
 end
 
--- Returns the result of function call in sloppy mode in an env
-local function run_sloppy(f, env,...)
-  return make_function_sloppy(f, env)(...)
+-- Returns the result of function call in sloppy mode in its env
+local function run_sloppy(f,...)
+  return make_function_sloppy(f)(...)
 end
 
 return {
