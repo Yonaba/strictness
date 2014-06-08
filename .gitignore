@@ -1,2 +1,4 @@
 *.bat
+*.dll
+*.exe
 test*
