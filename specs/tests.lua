@@ -7,22 +7,8 @@
 -- Test framework
 local test = require 'specs.framework'
 
--- Aliases
-local loaded = package.loaded
-
--- Setting a fake metatable to _G, for the Environment context
-local fake_mt = {
-  __index = function() end,
-  __newindex = function() end,
-  __tostring = function() return "fake_mt" end,
-}
-
--- Caching fake_mt field to track changes later
-local old_fake_mt_index = fake_mt.__index
-local old_fake_mt_newindex = fake_mt.__newindex
-local old_fake_mt_a_field = fake_mt.a_field
-
-setmetatable(_G, fake_mt)
+-- Detect Lua 5.2
+local _LUA52 = _VERSION:match('Lua 5.2')
 
 -- Creating data for tests
 -- Lua reserved keywords
@@ -30,21 +16,18 @@ local reserved = {
   'and', 'else', 'false', 'if', 'nil', 'repeat', 'until', 'true',
   'break', 'elseif', 'for', 'in', 'not', 'return', 'do', 'end',
   'function', 'local', 'or', 'then', 'while'
-}
-
-if _VERSION:match('5.2') then 
-  reserved[#reserved+1] = 'goto'
-end
+}; if _LUA52 then reserved[#reserved+1] = 'goto' end
 
 -- Some non-valid identifiers
 local wrong_identifiers = {'5_a', '.e_a', 'a,r', 'e+*z', '$b'}
 
--- Output decorators for section headers
+-- Decorators for section headers
 local function decorate(str)
   local line = ('='):rep(79)
   return ('\n%s\n%s\n%s'):format(line, str, line)
 end
 
+-- Get local via debug library
 local function getlocal(var, level)
 	local i = 1
 	while true do
@@ -55,6 +38,15 @@ local function getlocal(var, level)
 	end
 end
 
+-- Tests if arrays t1 and t2 are the same
+local function same(t1, t2)
+  if #t1 ~= #t2 then return false end
+  for k,v in ipairs(t1) do
+    if t2[k]~=v then return false end
+  end
+  return true
+end
+
 -- ===============
 -- Running tests
 -- ===============
@@ -63,68 +55,128 @@ local strictness = require 'strictness'
 
 print(decorate('Requiring strictness:'))
 test.assert_equal('returns a local table', getlocal('strictness', 2), 'strictness')
-test.assert_equal('this table contains a function named "global"', type(strictness.global), 'function')
-test.assert_equal('and another function named "globalize"', type(strictness.globalize), 'function')
+test.assert_equal('this table contains a function named "strict"', type(strictness.strict), 'function')
+test.assert_equal('this table contains a function named "sloppy"', type(strictness.sloppy), 'function')
+test.assert_equal('this table contains a function named "is_strict"', type(strictness.is_strict), 'function')
+test.assert_equal('this table contains a function named "strictf"', type(strictness.strictf), 'function')
+test.assert_equal('this table contains a function named "sloppyf"', type(strictness.sloppyf), 'function')
+test.assert_equal('this table contains a function named "run_strictf"', type(strictness.run_strictf), 'function')
+test.assert_equal('this table contains a function named "run_sloppyf"', type(strictness.run_sloppyf), 'function')
 
-print(decorate('Globals:'))
-test.assert_error('An attempt to read an undeclared global raises an error', function() print(x) end)
-test.assert_error('Assigning undeclared global raises an error', function() x = true end)
-test.assert_error('Assigning nil to undeclared global raises an error', function() x = nil end)
-test.assert_not_error('Should be declared before assignment via global()', function() strictness.global ("x"); x = true end)
-test.assert_not_nil('declared global x successfully', x, 2)
-test.assert_true('assigned global x successfully', x, 2)
-test.assert_not_error('A newly assigned global takes the value nil by default', function() strictness.global ("n"); end)
-test.assert_nil('declared n, n is nil', n, 2)
-test.assert_not_error('A declared global can also be assigned nil', function() n = nil end)
-test.assert_nil('n was assigned nil', n, 2)
-test.assert_error('global() do not accept tables', function() strictness.global({}) end)
-test.assert_error('global() do not accept numbers', function() strictness.global(1) end)
-test.assert_error('global() do not accept nil', function() strictness.global(nil) end)
-test.assert_error('global() do not accept boolean', function() strictness.global(true) end)
-test.assert_error('global() do not accept functions', function() strictness.global(function() end) end)
-test.assert_error('global() do not accept coroutine, userdata or threads', function() global(coroutine.create(function() end)) end)
-test.assert_not_error('global() only accept strings', function() strictness.global("a") end)
-test.assert_error('But not empty strings', function() strictness.global("") end)
-test.assert_not_error('Multiple globals can be declared with global()', function() strictness.global("yy", "zz") end)
-test.assert_nil('yy was declared, value is nil', yy, 2)
-test.assert_nil('zz was declared, value is nil', zz, 2)
+print(decorate('strictness.strict(t):'))
+local t = {}
+test.assert_true('makes a table strict', strictness.is_strict(strictness.strict(t)))
+test.assert_error('expects its first argument to be a table', function() strictness.strict(1) end)
+test.assert_true('if no argument was passed, it returns a strict empty table', strictness.is_strict(strictness.strict()))
+test.assert_error('errs if the passed in table is already strict', function() strictness.strict(t) end)
 
-print('  Global varnames cannot be a Lua reserved keywords')
-for _, varname in ipairs(reserved) do
-  test.assert_error(('like %s'):format(varname), function() strictness.global(varname) end, 2)
+print(decorate('strictness.is_strict():'))
+local t = strictness.strict()
+test.assert_true('tests if a given table is strict', strictness.is_strict(t))
+test.assert_false('returns false if the table is not strict', strictness.is_strict {})
+test.assert_error('expects its first argument to be a table', function() strictness.is_strict(1) end)
+
+print(decorate('trictness.sloppy():'))
+local t = strictness.strict()
+local u = strictness.sloppy(t)
+local v = strictness.sloppy({})
+test.assert_false('converts a strict table to a normal one', strictness.is_strict(u))
+test.assert_false('leaves the given table untouched if not strict', strictness.is_strict(v))
+test.assert_error('expects its first argument to be a table', function() strictness.sloppy(1) end)
+
+print(decorate('A strict table:'))
+local t = strictness.strict()
+local u = strictness.strict({}, 'x','y','z')
+local mt = {
+  __tostring = function(t) return t.name end,
+  __index = function(t,k) return 0 end,
+  __newindex = function(t,k,v) rawset(t, k, v) end,
+}
+local v = strictness.strict(setmetatable({name = 'v'},mt))
+local w = strictness.strict {a = true, b = false, c = 'a'}
+local y = strictness.strict({y = {}})
+local function global_err()
+  local _ENV = strictness.strict(_G)
+  assert(strictness.is_strict(_ENV)); x = 5
+end
+local function global_no_err()
+  local _ENV = _G
+  assert(strictness.is_strict(_ENV))
+  x = nil; x = 5; assert(x == 5); x = nil; assert(x == nil)
+end
+local function global_no_err2()
+  local _ENV = strictness.sloppy( _G)
+  assert(not strictness.is_strict(_ENV))
+  assert(x ==nil); x = 5; assert(x == 5)
+end
+test.assert_error('create errors when trying to access to undefined keys',function() return t.k end)
+test.assert_error('create errors when trying to assign value to undefined keys',function() t.x = 5 end)
+test.assert_not_error('new fields have to be defined explictely, assigning "nil"',function() t.x = nil end)
+test.assert_nil('as such, the new field will take the value "nil"',t.x)
+test.assert_not_error('this new field can now be indexed without creating error',function() return t.x end)
+test.assert_not_error('it can also be assigned any other value from now on',function() t.x = 5 end)
+test.assert_equal('and re-indexed without any problem',t.x,5)
+test.assert_not_error('fields already existing in a table made strict are preserved', function() assert(w.a == true and w.b == false and w.c == 'a') end)
+test.assert_not_error('and those fields can be reassigned new values, included nil', function() w.a, w.b, w.c = 1, w.c, nil; assert(w.a == 1 and w.b == 'a' and w.c == nil) end)
+test.assert_true('a strict table can also be declared with allowed keys, passed as vararg', (u.x == nil and u.y == nil and u.z == nil))
+test.assert_not_error('if a table made strict had a metatable, it is preserved',function() assert(tostring(v) == 'v'); v.z = 5; assert(v.x == 0 and v.z == 5) end)
+test.assert_error('strict rules can apply to environments', global_err)
+test.assert_not_error('therefore, global variables must be declared with value nil before use', global_no_err)
+test.assert_not_error('those environments can restored back to normal', global_no_err2)
+test.assert_not_error('strict rules does not apply on sub tables', function() y.y.k = 5 end)
+test.assert_error('those subtables must be made strict explicitely', function() strictness.strict(y.y); y.y.a = 5 end)
+
+print(decorate('Allowed fields in strict tables cannot be reserved keywords:'))
+for _,kword in ipairs(reserved) do
+  test.assert_error(('like "%s"'):format(kword), function() strictness.strict(nil, kword)end)
 end
 
-print('  global() raises an error when identifiers are not valid')
-for _, varname in ipairs(wrong_identifiers) do
-  test.assert_error(('like %s'):format(varname), function() strictness.global(varname) end, 2)
+print(decorate('Allowed fields in strict tables should be valid Lua identifiers:'))
+for _,kword in ipairs(wrong_identifiers) do
+  test.assert_error(('variable name like "%s" is not valid'):format(kword), function() strictness.strict(nil, kword)end)
 end
 
-print('  Varname "global" is not reserved')
-test.assert_not_error('declared global "global"',function() strictness.global "global"; global = true end, 2)
-test.assert_true('assigned var "global" a boolean value', global, 2)
+print(decorate('strictness.strictf:'))
+local _ENV = _G
+local function f(...) return ... end
+local strictf = strictness.strictf(f)
+local function f2() _ENV.var = 5 end
+local strictf2 = strictness.strictf(f2)
+test.assert_true('returns a strict function', type(strictness.strictf(function() end)) == 'function')
+test.assert_error('it expects its first argument to be a function', function() strictness.strictf(1) end)
+test.assert_not_error('or something callable', function() strictness.strictf(setmetatable({},{__call = true})) end)
+test.assert_not_equal('the strict function returned is different from the original one', strictf, f)
+test.assert_equal('but yields the exact same result',strictf(2),f(2))
+test.assert_true('or results', same ({strictf(1,2,3)}, {f(1,2,3)}))
+test.assert_error('A strict function cannot write undefined variables in its environment', strictf2)
+test.assert_error('no matter what this environment is strict', function() _ENV = strictness.strictf(_ENV); strictf2() end)
+test.assert_error('or sloppy', function() _ENV = strictness.sloppy(_ENV); strictf2() end)
 
-print('  Varname "globalize" is not reserved')
-test.assert_not_error('declared global "globalize"',function() strictness.global "globalize"; globalize = false end, 2)
-test.assert_false('assigned var "globalize" a boolean value', globalize, 2)
+print(decorate('strictness.sloppyf:'))
+local _ENV = strictness.sloppy(_G)
+local function f(...) return ... end
+local sloppyf = strictness.sloppyf(f)
+local function f2(var, value) _ENV[var] = value end
+local sloppyf2 = strictness.sloppyf(f2)
+test.assert_true('returns a sloppy function', type(strictness.sloppyf(function() end)) == 'function')
+test.assert_error('it expects its first argument to be a function', function() strictness.sloppyf(1) end)
+test.assert_not_error('or something callable', function() strictness.sloppyf(setmetatable({},{__call = true})) end)
+test.assert_not_equal('the sloppy function returned is different from the original one', sloppyf, f)
+test.assert_equal('but yields the exact same result',sloppyf(2),f(2))
+test.assert_true('or results', same ({sloppyf(1,2,3)}, {f(1,2,3)}))
+test.assert_not_error('A sloppy function can write undefined variables in its environment', function() sloppyf2('var1',5); assert(var1 == 5) end)
+test.assert_not_error('no matter what this environment is strict', function() _ENV = strictness.strict(_ENV); sloppyf2('var2','a'); assert(var2 == 'a') end)
+test.assert_not_error('or sloppy', function() _ENV = strictness.sloppy(_ENV); sloppyf2('var3',false); assert(var3 == false) end)
 
-print(decorate('Functions declaring globals:'))
-test.assert_error('Raises error when called normally', function() one = "one" end)
-test.assert_not_error('globalize() wraps these functions so that they can write globals', strictness.globalize(function() one = "one" end))
-test.assert_equal('called a function which declared a global successfully', one, "one", 2)
+print(decorate('strictness.run_strictf():'))
+local function f(var, value) _ENV[var] = value end
+test.assert_error('returns the result of the call f(...) in strict mode', function() strictness.run_strictf(f,'varname',true) end)
+test.assert_error('it expects its first argument to be a function', function() strictness.run_strictf(1) end)
 
-print(decorate('Environment metatable:'))
-test.assert_equal('Preserves a possible existing metatable for _G', getmetatable(_G), fake_mt)
-test.assert_not_equal('Overwrites __index in the env table metatable, if defined', fake_mt.__index, old_fake_mt_index)
-test.assert_not_equal('Overwrites __newindex in the env table metatable, if defined', fake_mt.__newindex, old_fake_mt_newindex)
-test.assert_equal('Any other defined field is preserved in the env metatable', tostring(_G), "fake_mt")
+print(decorate('strictness.run_sloppyf():'))
+local function f(var, value) _ENV[var] = value end
+test.assert_not_error('returns the result of the call f(...) in sloppy mode', function() strictness.run_sloppyf(f,'varname',true); assert(varname == true) end)
+test.assert_error('it expects its first argument to be a function', function() strictness.run_sloppyf(1) end)
 
-print(decorate('Locked Environments:'))
-test.assert_not_error('Let\'s unload strictness from package.loaded', function() package.loaded['strictness'] = nil end)
-test.assert_not_error('Now we lock _G with a new metatable implemeting a __newindex field', function() setmetatable(_G,{__newindex = function() error() end}) end)
-test.assert_error('We can no longer create globals', function() var = true end)
-test.assert_nil('could not assign variable "var"', var, 2)
-test.assert_not_error('Let\'s require strictness', function() strictness = require "strictness" end)
-test.assert_not_error('We can now declare globals', function() strictness.global "var"; var = true end)
-test.assert_true('successfully declared and assigned global "var" to true', var, 2)
-
+strictness.sloppy(_G)
 test.print_stats()
