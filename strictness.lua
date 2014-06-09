@@ -47,7 +47,8 @@ end
 
 -- Checks if iden match an valid Lua identifier syntax
 local function is_identifier(iden)
-  return tostring(iden):match('^[%a_]+[%w_]*$') and not is_reserved_keyword[iden]
+  return tostring(iden):match('^[%a_]+[%w_]*$') and 
+    not is_reserved_keyword[iden]
 end
 
 -- Checks if all elements of vararg are valid Lua identifiers
@@ -69,15 +70,21 @@ local function add_allowed_keys(t,register)
   end
   return register
 end
+
+-- Checks if the given arg is callable
+local function callable(f)
+  return type(f) == 'function' or (getmetatable(f) and getmetatable(f).__call)
+end
 ------------------------------- Module functions ------------------------------
 
 -- Makes a given table strict
 local function make_table_strict(t, ...)
   t = t or {}
+  complain_if(type(t) ~= 'table',
+    ('Argument #1 should be a table, not %s.'):format(type(t)),3) 
   local mt = getmetatable(t) or {}
   complain_if(mt.__strict, 
-    ('<%s> was already made strict.')
-      :format(tostring(t)),3)
+    ('<%s> was already made strict.'):format(tostring(t)),3)
     
   local varnames = v
   mt.__allowed = add_allowed_keys(t, validate_identifiers(...))
@@ -122,11 +129,15 @@ end
 
 -- Checks if a given table was made strict.
 local function is_table_strict(t)
+  complain_if(type(t) ~= 'table',
+    ('Argument #1 should be a table, not %s.'):format(type(t)),3)
   return not not (getmetatable(t) and getmetatable(t).__strict)
 end
 
 -- Makes a given table unstrict
 local function make_table_unstrict(t)
+  complain_if(type(t) ~= 'table',
+    ('Argument #1 should be a table, not %s.'):format(type(t)),3)
   if is_table_strict(t) then
     local mt = getmetatable(t)
     mt.__index, mt.__newindex = mt.__predefined_index, mt.__predefined_newindex
@@ -139,6 +150,8 @@ end
 -- Makes a given function strict
 -- Will run in strict mode whether or not its env is strict.
 local function make_function_strict(f)
+  complain_if(not callable(f),
+    ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return function(...)
     local ENV = getfenv(f)
     local was_strict = is_table_strict(ENV)
@@ -152,6 +165,8 @@ end
 -- Makes a given function sloppy
 -- Will override strict rules of its env
 local function make_function_sloppy(f)
+  complain_if(not callable(f),
+    ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return function(...)
     local ENV = getfenv(f)
     local was_strict = is_table_strict(ENV)
@@ -164,11 +179,15 @@ end
 
 -- Returns the result of function call in strict mode in its env
 local function run_strict(f,...)
+  complain_if(not callable(f),
+    ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return make_function_strict(f)(...)
 end
 
 -- Returns the result of function call in sloppy mode in its env
 local function run_sloppy(f,...)
+  complain_if(not callable(f),
+    ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return make_function_sloppy(f)(...)
 end
 
