@@ -14,7 +14,7 @@ CHANGELOG
 * Added `strictness.sloppyf` to wrap a normal function into a strict function.
 * Added `strictness.run_strictf` to run a normal function in strict mode.
 * Added `strictness.run_sloppyf` to run a normal function in sloppy mode.
-* Made compliant with Lua 5.2 new _ENV (although striclty speaking there are no globals in Lua 5.2).
+* Made compliant with Lua 5.2 new _ENV scheme (although striclty speaking there are no globals in Lua 5.2).
 
 ###0.1.0 (10/05/13)
 * Initial release
