@@ -6,6 +6,7 @@
 
 local _LUA52 = _VERSION:match('Lua 5.2')
 local setmetatable, getmetatable = setmetatable, getmetatable
+local pairs, ipairs = pairs, ipairs
 local rawget, rawget = rawget, rawget
 local unpack = _LUA52 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
@@ -44,26 +45,30 @@ local function complain_if(cond, msg, level)
   return cond and error(msg, level or 3)
 end
 
+-- Checks if iden match an valid Lua identifier syntax
+local function is_identifier(iden)
+  return tostring(iden):match('^[%a_]+[%w_]*$') and not is_reserved_keyword[iden]
+end
+
 -- Checks if all elements of vararg are valid Lua identifiers
 local function validate_identifiers(...)
-  local varnames = {...}
-  for i, iden in ipairs(varnames) do
-    local is_valid_iden = iden:match('^[%a_]+[%w_]*$') and 
-                          not is_reserved_keyword[iden]
-    complain_if(not is_valid_iden,
+  local arg, varnames= {...}, {}
+  for i, iden in ipairs(arg) do
+    complain_if(not is_identifier(iden),
       ('varname #%d "<%s>" is not a valid Lua identifier.')
         :format(i, tostring(iden)),4)
+  varnames[iden] = true
   end
   return varnames
 end
 
--- Swaps keys and values, overwrites values with v if provided
-local function swap_key_and_values(t, v)
-  local _t = {}
-  for i, val in  ipairs(t) do _t[val] = i and v end
-  return _t
+-- add true keys in register all keys in t
+local function add_allowed_keys(t,register)
+  for key in pairs(t) do 
+    if is_identifier(key) then register[key] = true end
+  end
+  return register
 end
-
 ------------------------------- Module functions ------------------------------
 
 -- Makes a given table strict
@@ -74,8 +79,8 @@ local function make_table_strict(t, ...)
     ('<%s> was already made strict.')
       :format(tostring(t)),3)
     
-  local varnames = validate_identifiers(...)
-  mt.__allowed = swap_key_and_values(varnames,true)
+  local varnames = v
+  mt.__allowed = add_allowed_keys(t, validate_identifiers(...))
   mt.__predefined_index = mt.__index
   mt.__predefined_newindex = mt.__newindex
   
@@ -123,6 +128,7 @@ end
 -- Makes a given table unstrict
 local function make_table_unstrict(t)
   if is_table_strict(t) then
+    local mt = getmetatable(t)
     mt.__index, mt.__newindex = mt.__predefined_index, mt.__predefined_newindex
     mt.__strict, mt.__allowed = nil, nil
     mt.__predefined_index, mt.__predefined_newindex = nil, nil
