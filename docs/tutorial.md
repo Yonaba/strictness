@@ -1,7 +1,7 @@
 strictness tutorial
 ===================
 
-# <a name='toc'>Table of Contents</a>
+# <a name='TOC'>Table of Contents</a>
 
 * [What is *strictness* ?](#what)
 * [Tutorial](#tuto)
