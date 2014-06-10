@@ -1,15 +1,15 @@
 strictness tutorial
 ===================
 <br/>
-## What is *strictness* ?
+# What is *strictness* ?
 
-*strictness* is a Lua module for tracking access and assignements to undeclared variables in Lua code. It is actually known that [global variables and undefined variables](http://lua-users.org/wiki/DetectingUndefinedVariables) can be very problematic especially when working on large project and maintaining code that spans across several files.
+*strictness* is a Lua module for tracking accesses and assignements to indefined variables in Lua code. It is actually known that [undefined variables](http://lua-users.org/wiki/DetectingUndefinedVariables) and global variables as well can be very problematic especially when working on large projects and maintaining code that spans across several files.
 
-*strictness* aims to address this problem by providing a solution similar to [strict structs](http://lua-users.org/wiki/StrictStructs), which is strict rules for tables, so that accessing undefined fields will throw an error. 
+*strictness* aims to address this problem by providing a solution similar to [strict structs](http://lua-users.org/wiki/StrictStructs), so that accessing undefined fields will always throw an error. 
 
-##Tutorial
+#Tutorial
 
-###  Adding *strictness* to your project
+##  Adding *strictness* to your project
 
 Place the file [strictness.lua](strictness.lua) in your Lua project and call it with [require](http://pgl.yoyo.org/luai/i/require). *strictness* does not write anything in the global (or the current) environnement. It rather returns a local module of functions.
 
@@ -17,23 +17,25 @@ Place the file [strictness.lua](strictness.lua) in your Lua project and call it 
 local strictness = require "strictness"
 ````
 
-###  The *strictness* module
+##  The *strictness* module
+
+### Strict tables
 
 *strictness* provides the function `strictness.strict` that patches a given table, so that we can no longer access to undefined keys in this table.
 Let us apply appy this on the global environnement:
 
 ```lua
 strictness.strict(_G)
-print(x) --> attempt to access to an undefined global "x"
+print(x) --> this line produces an error
 ````
 
 The statement `print(x)`produces the following error:
 
 ````
->...\test.lua:2: Attempt to access undeclared variable "x" in <table: 0x00321328>.
+...\test.lua:2: Attempt to access undeclared variable "x" in <table: 0x00321328>.
 ```
 
-To avoid this, we now have to declare explitely our globals. Assigning `nil` will do:
+To avoid this, we now have to __declare explitely__ our globals. Assigning `nil` will do:
 
 ```lua
 strictness.strict(_G)
@@ -86,6 +88,8 @@ strictness.strict(t) --> this will produce an error
 ...\test.lua:3: <table: 0x0032c110> was already made strict.
 ````
 
+### Sloppy (or normal) tables
+
 A strict table can be converted back to a normal one via `strictness.sloppy`:
 
 ```lua
@@ -94,6 +98,8 @@ strictness.sloppy(t)
 t.k = 5
 print(t.k) --> 5
 ````
+
+### Checking strictness
 
 `strictness.is_strict` checks if a given table was patched via `strictness.strict`:
 
@@ -105,7 +111,9 @@ print(strictness.is_strict(strict_table)) --> true
 print(strictness.is_strict(normal_table)) --> false
 ````
 
-`strictness.strictf` returns a wrapper that runs the original function in strict mode. The returned function is not allowed to write or access undefined fields in its environment. Let us draw an example:
+### Strict functions
+
+`strictness.strictf` returns a wrapper function that runs the original function in strict mode. The returned function is not allowed to write or access undefined fields in its environment. Let us draw an example:
 
 ```lua
 local env = {}  -- a blank environment for our functions
@@ -133,7 +141,9 @@ strict_f("var2", "hello") --> produces an error
 ...\test.lua:5: Attempt to assign value to an undeclared variable "var2" in <table: 0x0032c440>.
 ````
 
-Notice that here, the strict function always run in strict mode whether or not its environment is strict or not.
+Notice that here, the strict function always run in strict mode whether its environment is strict or not.
+
+### Sloppy functions
 
 Similarly, `strictness.sloppyf` creates a wrapper function that runs in sloppy mode in its environment. In other terms, the returned function is allowed to access and assign values in its environments, whether or not this environment is strict.
 
@@ -182,7 +192,9 @@ do
 end
 ````
 
-*strictness* provides also two combo functions, `strictness.run_strictf` and `strictness.run_sloppyf`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and sloppy mode respectively.
+### Combo functions
+
+*strictness* also provides two combo functions, `strictness.run_strictf` and `strictness.run_sloppyf`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and sloppy mode respectively.
 Syntactically speaking, `strictnes.run_strictf` is the equivalent to this:
 
 ```lua
@@ -226,8 +238,8 @@ strictness.run_sloppyf(normal_f, 3) -- no error!
 print(env.some_var, some_var) --> 3, nil
 ````
 
-##  LICENSE
+#  LICENSE
 
 This work is under [MIT-LICENSE](http://www.opensource.org/licenses/mit-license.php)<br/>
-*Copyright (c) 2013-2014 Roland Yonaba*.</br>
-See [LICENSE](LICENSE).
+*Copyright (c) 2013-2014 Roland Yonaba*.<br/>
+See [LICENSE](http://github.com/Yonaba/strictness/blob/master/LICENSE).
