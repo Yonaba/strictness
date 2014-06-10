@@ -75,11 +75,13 @@ end
 local function callable(f)
   return type(f) == 'function' or (getmetatable(f) and getmetatable(f).__call)
 end
+
 ------------------------------- Module functions ------------------------------
 
 -- Makes a given table strict
 local function make_table_strict(t, ...)
   t = t or {}
+  local has_mt = getmetatable(t)
   complain_if(type(t) ~= 'table',
     ('Argument #1 should be a table, not %s.'):format(type(t)),3) 
   local mt = getmetatable(t) or {}
@@ -123,6 +125,7 @@ local function make_table_strict(t, ...)
   end
   
   mt.__strict = true
+  mt.__has_mt = has_mt
   return setmetatable(t, mt)
   
 end
@@ -140,9 +143,13 @@ local function make_table_unstrict(t)
     ('Argument #1 should be a table, not %s.'):format(type(t)),3)
   if is_table_strict(t) then
     local mt = getmetatable(t)
-    mt.__index, mt.__newindex = mt.__predefined_index, mt.__predefined_newindex
-    mt.__strict, mt.__allowed = nil, nil
-    mt.__predefined_index, mt.__predefined_newindex = nil, nil
+    if not mt.__has_mt then
+      setmetatable(t, nil)
+    else
+      mt.__index, mt.__newindex = mt.__predefined_index, mt.__predefined_newindex
+      mt.__strict, mt.__allowed, mt.__has_mt = nil, nil, nil
+      mt.__predefined_index, mt.__predefined_newindex = nil, nil
+    end
   end
   return t
 end
