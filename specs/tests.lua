@@ -29,13 +29,13 @@ end
 
 -- Get local via debug library
 local function getlocal(var, level)
-	local i = 1
-	while true do
-		local n = debug.getlocal(level,i)
-		i = i+1
-		if not n then break end
-		if n == var then return n end
-	end
+  local i = 1
+  while true do
+    local n = debug.getlocal(level,i)
+    i = i+1
+    if not n then break end
+    if n == var then return n end
+  end
 end
 
 -- Tests if arrays t1 and t2 are the same
