@@ -1,6 +1,6 @@
 strictness tutorial
 ===================
-<hr>
+
 # <a name='toc'>Table of Contents</a>
 
 * [What is *strictness* ?](#what)
@@ -14,7 +14,6 @@ strictness tutorial
      * [Sloppy functions](#sloppyf)
      * [Combo functions](#combo)
 * [License](#license)
-<hr>
 
 # <a name='what'>What is *strictness* ?</a>
 
