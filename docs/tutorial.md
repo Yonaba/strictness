@@ -1,0 +1,233 @@
+strictness tutorial
+===================
+<br/>
+## What is *strictness* ?
+
+*strictness* is a Lua module for tracking access and assignements to undeclared variables in Lua code. It is actually known that [global variables and undefined variables](http://lua-users.org/wiki/DetectingUndefinedVariables) can be very problematic especially when working on large project and maintaining code that spans across several files.
+
+*strictness* aims to address this problem by providing a solution similar to [strict structs](http://lua-users.org/wiki/StrictStructs), which is strict rules for tables, so that accessing undefined fields will throw an error. 
+
+##Tutorial
+
+###  Adding *strictness* to your project
+
+Place the file [strictness.lua](strictness.lua) in your Lua project and call it with [require](http://pgl.yoyo.org/luai/i/require). *strictness* does not write anything in the global (or the current) environnement. It rather returns a local module of functions.
+
+```lua
+local strictness = require "strictness"
+````
+
+###  The *strictness* module
+
+*strictness* provides the function `strictness.strict` that patches a given table, so that we can no longer access to undefined keys in this table.
+Let us apply appy this on the global environnement:
+
+```lua
+strictness.strict(_G)
+print(x) --> attempt to access to an undefined global "x"
+````
+
+The statement `print(x)`produces the following error:
+
+````
+>...\test.lua:2: Attempt to access undeclared variable "x" in <table: 0x00321328>.
+```
+
+To avoid this, we now have to declare explitely our globals. Assigning `nil` will do:
+
+```lua
+strictness.strict(_G)
+x = nil
+print(x) --> nil
+x = 3
+print(x) --> 3
+````
+
+A table can be made strict with allowed varnames.
+
+```lua
+strictness.strict(_G, 'x', 'y', 'z') -- "varnames x, y and z are allowed"
+print(x, y, z) --> nil, nil, nil
+x, y, z = 1, 2, 3
+print(x, y, z) --> 1, 2, 3
+````
+
+Also, in case nothing is passed to `strictness.strict`, it will return a new table:
+
+```lua
+local t = strictness.strict()
+print(t.k) --> produces an error
+t.k = nil  --> declare a field "k"
+print(t.k) --> nil
+````
+
+`strictness.strict` preserves the metatable of the passed-in table.
+
+```lua
+local t = setmetatable({}, {
+    __call = function() return 'call' end,
+    __tostring = function() return t.name end
+})
+t.name = 'table t'
+strictness.strict(t)
+print(t()) --> "call"
+print(t) --> "table t"
+````
+
+In case a table was already made strict, passing it again to `strictness.strict` will raise an error:
+
+```lua
+local t = {}
+strictness.strict(t)
+strictness.strict(t) --> this will produce an error
+````
+
+````
+...\test.lua:3: <table: 0x0032c110> was already made strict.
+````
+
+A strict table can be converted back to a normal one via `strictness.sloppy`:
+
+```lua
+local t = strictness.strict()
+strictness.sloppy(t)
+t.k = 5
+print(t.k) --> 5
+````
+
+`strictness.is_strict` checks if a given table was patched via `strictness.strict`:
+
+```lua
+local strict_table = strictness.strict()
+local normal_table = {}
+
+print(strictness.is_strict(strict_table)) --> true
+print(strictness.is_strict(normal_table)) --> false
+````
+
+`strictness.strictf` returns a wrapper that runs the original function in strict mode. The returned function is not allowed to write or access undefined fields in its environment. Let us draw an example:
+
+```lua
+local env = {}  -- a blank environment for our functions
+
+-- A function that writes a varname and assigns it a value 
+local function normal_f(varname, value)
+  varname = value
+end
+-- Convert the original function to a strict one
+local strict_f = strictness.strictf(normal_f)
+
+-- set environments for functions
+setfenv(normal_f, env)
+setfenv(strict_f, env)
+
+-- Call the normal function, no error
+normal_f("var1", "hello")
+print(env.var1) --> "hello"
+
+
+strict_f("var2", "hello") --> produces an error 
+````
+
+````
+...\test.lua:5: Attempt to assign value to an undeclared variable "var2" in <table: 0x0032c440>.
+````
+
+Notice that here, the strict function always run in strict mode whether or not its environment is strict or not.
+
+Similarly, `strictness.sloppyf` creates a wrapper function that runs in sloppy mode in its environment. In other terms, the returned function is allowed to access and assign values in its environments, whether or not this environment is strict.
+
+```lua
+local env = strictness.strict()  -- a blank and strict environment for our functions
+
+-- A function that assigns a value to a variable named "some_var"
+local function normal_f(value)  
+  some_var = value  
+end
+
+-- Converts the original function to a sloppy one
+local sloppy_f = strictness.sloppyf(normal_f)
+
+-- set environments for functions
+setfenv(normal_f, env)
+setfenv(sloppy_f, env)
+
+-- Call the normal function, it should err because its env is strict
+normal_f("hello") --> produces an error
+
+-- Call the sloppy function, no error
+sloppy_f("hello")
+print(env.some_var) --> "hello
+````
+
+Here is an example with Lua 5.2:
+
+```lua
+local new_env = {print = print} --  a new env
+do
+  local _ENV = strictness.strict(new_env) -- sets a new strict env for the do..end scope
+  local function normal_f(value) some_var = value end -- our normal function
+  normal_f(5) --> produces an error, since normal_f cannot write in the strict _ENV
+end
+````
+
+```lua
+local new_env = {print = print} --  a new env
+do
+  local _ENV = strictness.strict(new_env) -- sets a new strict env for the do..end scope
+  local function normal_f(value) some_var = value end -- our normal function
+  local sloppy_f = strictness.sloppy(normal_f) -- the sloppy version of our normal function 
+  sloppy_f(5) -- no longer produces error
+  print(some_var) --> 5
+end
+````
+
+*strictness* provides also two combo functions, `strictness.run_strictf` and `strictness.run_sloppyf`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and sloppy mode respectively.
+Syntactically speaking, `strictnes.run_strictf` is the equivalent to this:
+
+```lua
+local strict_f = strictness.strictf(f)
+strict_f(...)
+````
+
+While `strictness.run_sloppyf` is a short for:
+
+```lua
+local sloppy_f = strictness.sloppyf(f)
+sloppy_f(...)
+````
+
+Here is an example for `strictness.run_strictf`:
+
+```lua
+local strictness = require 'strictness'
+
+local env = {}  -- an environment
+
+-- A function that assigns a value to a variable named "some_var"
+local function normal_f(value)  some_var = value  end
+
+setfenv(normal_f, env) -- defines an env for normal_f
+strictness.run_strictf(normal_f, 3) --> produces an error
+````
+
+And another example with `strictness.run_sloppyf`:
+
+```lua
+local strictness = require 'strictness'
+
+local env = strictness.strict()  -- a strict environment
+
+-- A function that assigns a value to a variable named "some_var"
+local function normal_f(value)  some_var = value  end
+
+setfenv(normal_f, env) -- defines an env for normal_f
+strictness.run_sloppyf(normal_f, 3) -- no error!
+print(env.some_var, some_var) --> 3, nil
+````
+
+##  LICENSE
+
+This work is under [MIT-LICENSE](http://www.opensource.org/licenses/mit-license.php)<br/>
+*Copyright (c) 2013-2014 Roland Yonaba*.</br>
+See [LICENSE](LICENSE).
