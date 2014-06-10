@@ -1,15 +1,32 @@
 strictness tutorial
 ===================
-<br/>
-# What is *strictness* ?
+<hr>
+# <a name='toc'>Table of Contents</a>
+
+* [What is *strictness* ?](#what)
+* [Tutorial](#tuto)
+  * [Adding *strictness* to your project](#adding)
+  * [The *strictness* module](#module)
+     * [Strict tables](#stricttables)
+     * [Sloppy tables](#sloppytables)
+     * [Checking strictness](#checking)
+     * [Strict functions](#strictf)
+     * [Sloppy functions](#sloppyf)
+     * [Combo functions](#combo)
+* [License](#license)
+<hr>
+
+# <a name='what'>What is *strictness* ?</a>
 
 *strictness* is a Lua module for tracking accesses and assignements to indefined variables in Lua code. It is actually known that [undefined variables](http://lua-users.org/wiki/DetectingUndefinedVariables) and global variables as well can be very problematic especially when working on large projects and maintaining code that spans across several files.
 
 *strictness* aims to address this problem by providing a solution similar to [strict structs](http://lua-users.org/wiki/StrictStructs), so that accessing undefined fields will always throw an error. 
 
-#Tutorial
+**[[⬆]](#TOC)**
 
-##  Adding *strictness* to your project
+# <a name='tuto'>Tutorial</a>
+
+##  <a name='adding'>Adding *strictness* to your project</a>
 
 Place the file [strictness.lua](strictness.lua) in your Lua project and call it with [require](http://pgl.yoyo.org/luai/i/require). *strictness* does not write anything in the global (or the current) environnement. It rather returns a local module of functions.
 
@@ -17,9 +34,11 @@ Place the file [strictness.lua](strictness.lua) in your Lua project and call it 
 local strictness = require "strictness"
 ````
 
-##  The *strictness* module
+**[[⬆]](#TOC)**
 
-### Strict tables
+##  <a name='module'>The *strictness* module</a>
+
+### <a name='stricttables'>Strict tables</a>
 
 *strictness* provides the function `strictness.strict` that patches a given table, so that we can no longer access to undefined keys in this table.
 Let us apply appy this on the global environnement:
@@ -88,7 +107,9 @@ strictness.strict(t) --> this will produce an error
 ...\test.lua:3: <table: 0x0032c110> was already made strict.
 ````
 
-### Sloppy (or normal) tables
+**[[⬆]](#TOC)**
+
+### <a name='sloppytables'>Sloppy (or normal) tables</a>
 
 A strict table can be converted back to a normal one via `strictness.sloppy`:
 
@@ -99,7 +120,9 @@ t.k = 5
 print(t.k) --> 5
 ````
 
-### Checking strictness
+**[[⬆]](#TOC)**
+
+### <a name='checking'>Checking strictness</a>
 
 `strictness.is_strict` checks if a given table was patched via `strictness.strict`:
 
@@ -111,7 +134,9 @@ print(strictness.is_strict(strict_table)) --> true
 print(strictness.is_strict(normal_table)) --> false
 ````
 
-### Strict functions
+**[[⬆]](#TOC)**
+
+### <a name='strictf'>Strict functions</a>
 
 `strictness.strictf` returns a wrapper function that runs the original function in strict mode. The returned function is not allowed to write or access undefined fields in its environment. Let us draw an example:
 
@@ -143,7 +168,9 @@ strict_f("var2", "hello") --> produces an error
 
 Notice that here, the strict function always run in strict mode whether its environment is strict or not.
 
-### Sloppy functions
+**[[⬆]](#TOC)**
+
+### <a name='sloppyf'>Sloppy functions</a>
 
 Similarly, `strictness.sloppyf` creates a wrapper function that runs in sloppy mode in its environment. In other terms, the returned function is allowed to access and assign values in its environments, whether or not this environment is strict.
 
@@ -192,7 +219,9 @@ do
 end
 ````
 
-### Combo functions
+**[[⬆]](#TOC)**
+
+### <a name='combo'>Combo functions</a>
 
 *strictness* also provides two combo functions, `strictness.run_strictf` and `strictness.run_sloppyf`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and sloppy mode respectively.
 Syntactically speaking, `strictnes.run_strictf` is the equivalent to this:
@@ -238,8 +267,12 @@ strictness.run_sloppyf(normal_f, 3) -- no error!
 print(env.some_var, some_var) --> 3, nil
 ````
 
-#  LICENSE
+**[[⬆]](#TOC)**
+
+# <a name='license'>LICENSE</a>
 
 This work is under [MIT-LICENSE](http://www.opensource.org/licenses/mit-license.php)<br/>
 *Copyright (c) 2013-2014 Roland Yonaba*.<br/>
 See [LICENSE](http://github.com/Yonaba/strictness/blob/master/LICENSE).
+
+**[[⬆]](#TOC)**
