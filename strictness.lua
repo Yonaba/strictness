@@ -1,6 +1,7 @@
 #!/usr/bin/env lua
----------------
--- ## strictness, a strict mode for Lua.
+------------------
+-- *strictness, a "strict" mode for Lua*.
+-- Source on [Github](http://github.com/Yonaba/strictness)
 -- @author Roland Yonaba
 -- @copyright 2013-2014
 -- @license MIT
@@ -13,8 +14,8 @@ local unpack = _LUA52 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
 local getfenv = getfenv
 
-local _MODULEVERSION = '0.2.0',
-local _DESCRIPTION   = '
+local _MODULEVERSION = '0.2.0'
+
 ----------------------------- Private definitions -----------------------------
 
 if _LUA52 then
@@ -146,7 +147,7 @@ end
 --- Checks if a given table is strict.
 -- @name strictness.is_strict
 -- @param t a table
--- @return `true` if the table is strict, `false`otherwise.
+-- @return `true` if the table is strict, `false` otherwise.
 -- @usage
 -- local is_strict = strictness.is_strict(a_table)
 local function is_table_strict(t)
