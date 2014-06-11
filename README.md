@@ -13,7 +13,7 @@ in Lua 5.2, which strictly speaking has no globals, because of its [lexical scop
 *strictness* is a module to track *access and assignment* to undefined variables in your code. It *enforces* to declare globals and modules variables before
 assigning them values. As such, it helps having a better control on the scope of variables across the code.
 
-*strictness* is mostly meant to work with Lua [5.1](http://www.lua.org/versions.html#5.1), but it is compatible witn Lua [5.2](http://www.lua.org/versions.html#5.2).
+*strictness* is mostly meant to work with Lua [5.1](http://www.lua.org/versions.html#5.1), but it is compatible with Lua [5.2](http://www.lua.org/versions.html#5.2).
 
 ##Installation
 
@@ -46,7 +46,7 @@ See [tutorial.md](docs/tutorial.md).
 
 This project has specification tests. To run these tests, execute the following command from the project root folder:
 
-    lua specs/tests.lua
+    lua spec/tests.lua
 
 ##Similar projects
 
