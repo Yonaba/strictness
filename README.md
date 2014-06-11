@@ -5,13 +5,15 @@ strictness
 [![Coverage Status](https://coveralls.io/repos/Yonaba/strictness/badge.png?branch=master)](https://coveralls.io/r/Yonaba/strictness?branch=master)
 [![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE)
 
-In Lua, one must use the `local` statement to create a local variable. On the other hand, global variables do not need assignment, Lua being [global by default](http://www.lua.org/pil/1.2.html). <br>
+With the __Lua__ programming language, undeclared variables are not detected until runtime, as Lua will not complain when loading code.
+This is releated to the convention that Lua uses : [global by default](http://www.lua.org/pil/1.2.html). In other words, when a variable is not recognized as *local*, it will be
+interpreted as a *global* one, and will involve a lookup in the global environment `_G` (for Lua 5.1). Note that this behaviour has been addressed
+in Lua 5.2, which strictly speaking has no globals, because of its [lexical scoping](http://www.luafaq.org/#T8.2.1).
 
-*strictness* is yet another pure Lua module (compatible with Lua 5.1 and 5.2) which stands for tracking global variables declaration and assignments in your code.<br>
+*strictness* is a module to track *access and assignment* to undefined variables in your code. It *enforces* to declare globals and modules variables before
+assigning them values. As such, it helps having a better control on the scope of variables across the code.
 
-With *strictness*, one is forced to declare globals using a new function, `global`. As such, it helps having a better control on the scope of  variables and therefore minimizes the global environment namespace pollution.
-
-*strictness* is compatible with Lua [5.1](http://www.lua.org/versions.html#5.1) and Lua [5.2](http://www.lua.org/versions.html#5.2).
+*strictness* is mostly meant to work with Lua [5.1](http://www.lua.org/versions.html#5.1), but it is compatible with Lua [5.2](http://www.lua.org/versions.html#5.2).
 
 ##Installation
 
@@ -33,54 +35,29 @@ With *strictness*, one is forced to declare globals using a new function, `globa
 
 or 
 
-    luarocks install --server=http://rocks.moonscript.org/manifests/Yonaba strictness
+    luarocks install strictness --server=http://rocks.moonscript.org strictness
 
-
-##Usage
-
-Place the file [strictness.lua](strictness.lua) in your project and call it with [require](http://pgl.yoyo.org/luai/i/require).
-
-    local strict = require "strictness"
 
 ## Documentation
 
-See [tutorial.md](docs/tutorial.md).
+See [tutorial.md](doc/tutorial.md).
 
 ##Tests
 
-This project includes a custom test framework and specifications tests. To run these tests, run the following from the project root folder:
+This project has specification tests. To run these tests, execute the following command from the project root folder:
 
-    lua specs/tests.lua
+    lua spec/tests.lua
 
-##Alternative implementations
+##Similar projects
 
 Feel free to check those alternate implementations, from with *strictness* takes some inspiration:
 
-* [strict.lua](http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua), which is included in the official Lua distribution
-* [pl.strict](https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua), which is part of [S. Donovan](https://github.com/stevedonovan)'s [Penlight](https://github.com/stevedonovan/Penlight).
-
+* [strict.lua](http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua) which is included in the official Lua 5.1 distribution,
+* [pl.strict](https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua) which is part of [Penlight](https://github.com/stevedonovan/Penlight),
   
 ##License
 This work is under [MIT-LICENSE](http://www.opensource.org/licenses/mit-license.php)<br/>
-Copyright (c) 2013 Roland Yonaba
-
-    Permission is hereby granted, free of charge, to any person obtaining a
-    copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*Copyright (c) 2013-2014 Roland Yonaba*.
+See [LICENSE](LICENSE).
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Yonaba/strictness/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
