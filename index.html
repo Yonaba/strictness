@@ -31,15 +31,19 @@
         <h1>
 <a name="strictness" class="anchor" href="#strictness"><span class="octicon octicon-link"></span></a>strictness</h1>
 
-<p><a href="https://travis-ci.org/Yonaba/strictness"><img src="https://travis-ci.org/Yonaba/strictness.png" alt="Build Status"></a></p>
+<p><a href="https://travis-ci.org/Yonaba/strictness"><img src="https://travis-ci.org/Yonaba/strictness.png" alt="Build Status"></a>
+<a href="https://coveralls.io/r/Yonaba/strictness?branch=master"><img src="https://coveralls.io/repos/Yonaba/strictness/badge.png?branch=master" alt="Coverage Status"></a>
+<a href="LICENSE"><img src="http://img.shields.io/badge/Licence-MIT-brightgreen.svg" alt="License"></a></p>
 
-<p>In Lua, one must use the <code>local</code> statement to create a local variable. On the other hand, global variables do not need assignment, Lua being <a href="http://www.lua.org/pil/1.2.html">global by default</a>. <br></p>
+<p>With the <strong>Lua</strong> programming language, undeclared variables are not detected until runtime, as Lua will not complain when loading code.
+This is releated to the convention that Lua uses : <a href="http://www.lua.org/pil/1.2.html">global by default</a>. In other words, when a variable is not recognized as <em>local</em>, it will be
+interpreted as a <em>global</em> one, and will involve a lookup in the global environment <code>_G</code> (for Lua 5.1). Note that this behaviour has been addressed
+in Lua 5.2, which strictly speaking has no globals, because of its <a href="http://www.luafaq.org/#T8.2.1">lexical scoping</a>.</p>
 
-<p><em>strictness</em> is yet another pure Lua module (compatible with Lua 5.1 and 5.2) which stands for tracking global variables declaration and assignments in your code.<br></p>
+<p><em>strictness</em> is a module to track <em>access and assignment</em> to undefined variables in your code. It <em>enforces</em> to declare globals and modules variables before
+assigning them values. As such, it helps having a better control on the scope of variables across the code.</p>
 
-<p>With <em>strictness</em>, one is forced to declare globals using a new function, <code>global</code>. As such, it helps having a better control on the scope of  variables and therefore minimizes the global environment namespace pollution.</p>
-
-<p><em>strictness</em> is compatible with Lua <a href="http://www.lua.org/versions.html#5.1">5.1</a> and Lua <a href="http://www.lua.org/versions.html#5.2">5.2</a>.</p>
+<p><em>strictness</em> is mostly meant to work with Lua <a href="http://www.lua.org/versions.html#5.1">5.1</a>, but it is compatible with Lua <a href="http://www.lua.org/versions.html#5.2">5.2</a>.</p>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -70,65 +74,37 @@
 
 <p>or </p>
 
-<pre><code>luarocks install --server=http://rocks.moonscript.org/manifests/Yonaba strictness
-</code></pre>
-
-<h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
-
-<p>Place the file <a href="strictness.lua">strictness.lua</a> in your project and call it with <a href="http://pgl.yoyo.org/luai/i/require">require</a>.</p>
-
-<pre><code>require "strictness"
+<pre><code>luarocks install strictness --server=http://rocks.moonscript.org strictness
 </code></pre>
 
 <h2>
 <a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
 
-<p>See <a href="docs/tutorial.md">tutorial.md</a>.</p>
+<p>See <a href="doc/tutorial.md">tutorial.md</a>.</p>
 
 <h2>
 <a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
 
-<p>This project includes a custom test framework and specifications tests. To run these tests, run the following from the project root folder:</p>
+<p>This project has specification tests. To run these tests, execute the following command from the project root folder:</p>
 
-<pre><code>lua specs/tests.lua
+<pre><code>lua spec/tests.lua
 </code></pre>
 
 <h2>
-<a name="alternative-implementations" class="anchor" href="#alternative-implementations"><span class="octicon octicon-link"></span></a>Alternative implementations</h2>
+<a name="similar-projects" class="anchor" href="#similar-projects"><span class="octicon octicon-link"></span></a>Similar projects</h2>
 
 <p>Feel free to check those alternate implementations, from with <em>strictness</em> takes some inspiration:</p>
 
 <ul>
 <li>
-<a href="http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua">strict.lua</a>, which is included in the official Lua distribution</li>
+<a href="http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua">strict.lua</a> which is included in the official Lua 5.1 distribution,</li>
 <li>
-<a href="https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua">pl.strict</a>, which is part of <a href="https://github.com/stevedonovan">S. Donovan</a>'s <a href="https://github.com/stevedonovan/Penlight">Penlight</a>.</li>
+<a href="https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua">pl.strict</a> which is part of <a href="https://github.com/stevedonovan/Penlight">Penlight</a>,</li>
 </ul><h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-<p>This work is under <a href="http://www.opensource.org/licenses/mit-license.php">MIT-LICENSE</a><br>
-Copyright (c) 2013 Roland Yonaba</p>
-
-<pre><code>Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-</code></pre>
+<p>This work is under <a href="http://www.opensource.org/licenses/mit-license.php">MIT-LICENSE</a><br><em>Copyright (c) 2013-2014 Roland Yonaba</em>.
+See <a href="LICENSE">LICENSE</a>.</p>
 
 <p><a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/Yonaba/strictness/trend.png" alt="Bitdeli Badge"></a></p>
       </section>
