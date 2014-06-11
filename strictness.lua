@@ -169,9 +169,9 @@ local function make_function_strict(f)
   end
 end
 
--- Makes a given function sloppy
+-- Makes a given function unstrict
 -- Will override strict rules of its env
-local function make_function_sloppy(f)
+local function make_function_unstrict(f)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return function(...)
@@ -191,19 +191,19 @@ local function run_strict(f,...)
   return make_function_strict(f)(...)
 end
 
--- Returns the result of function call in sloppy mode in its env
-local function run_sloppy(f,...)
+-- Returns the result of function call in non strict mode in its env
+local function run_unstrict(f,...)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
-  return make_function_sloppy(f)(...)
+  return make_function_unstrict(f)(...)
 end
 
 return {
-  strict      = make_table_strict,
-  sloppy      = make_table_unstrict,
-  is_strict   = is_table_strict,  
-  sloppyf     = make_function_sloppy,
-  strictf     = make_function_strict,
-  run_strictf = run_strict,
-  run_sloppyf = run_sloppy,
+  strict       = make_table_strict,
+  unstrict     = make_table_unstrict,
+  is_strict    = is_table_strict,
+  strictf      = make_function_strict,  
+  unstrictf    = make_function_unstrict,
+  run_strict  = run_strict,
+  run_unstrict = run_unstrict,
 }

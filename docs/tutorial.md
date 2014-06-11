@@ -8,10 +8,10 @@ strictness tutorial
   * [Adding *strictness* to your project](#adding)
   * [The *strictness* module](#module)
      * [Strict tables](#stricttables)
-     * [Sloppy tables](#sloppytables)
+     * [Non-strict tables](#unstricttables)
      * [Checking strictness](#checking)
      * [Strict functions](#strictf)
-     * [Sloppy functions](#sloppyf)
+     * [Non-strict functions](#unstrictf)
      * [Combo functions](#combo)
 * [License](#license)
 
@@ -108,13 +108,13 @@ strictness.strict(t) --> this will produce an error
 
 **[[⬆]](#TOC)**
 
-### <a name='sloppytables'>Sloppy (or normal) tables</a>
+### <a name='unstricttables'>Non-Strict (or normal) tables</a>
 
-A strict table can be converted back to a normal one via `strictness.sloppy`:
+A strict table can be converted back to a normal one via `strictness.unstrict`:
 
 ```lua
 local t = strictness.strict()
-strictness.sloppy(t)
+strictness.unstrict(t)
 t.k = 5
 print(t.k) --> 5
 ````
@@ -169,9 +169,9 @@ Notice that here, the strict function always run in strict mode whether its envi
 
 **[[⬆]](#TOC)**
 
-### <a name='sloppyf'>Sloppy functions</a>
+### <a name='unstrictf'>Non-strict functions</a>
 
-Similarly, `strictness.sloppyf` creates a wrapper function that runs in sloppy mode in its environment. In other terms, the returned function is allowed to access and assign values in its environments, whether or not this environment is strict.
+Similarly, `strictness.unstrictf` creates a wrapper function that runs in non-strict mode in its environment. In other terms, the returned function is allowed to access and assign values in its environments, whether or not this environment is strict.
 
 ```lua
 local env = strictness.strict()  -- a blank and strict environment for our functions
@@ -181,18 +181,18 @@ local function normal_f(value)
   some_var = value  
 end
 
--- Converts the original function to a sloppy one
-local sloppy_f = strictness.sloppyf(normal_f)
+-- Converts the original function to a non-strict one
+local unstrict_f = strictness.unstrictf(normal_f)
 
 -- set environments for functions
 setfenv(normal_f, env)
-setfenv(sloppy_f, env)
+setfenv(unstrict_f, env)
 
 -- Call the normal function, it should err because its env is strict
 normal_f("hello") --> produces an error
 
--- Call the sloppy function, no error
-sloppy_f("hello")
+-- Call the non-strict function, no error
+unstrict_f("hello")
 print(env.some_var) --> "hello
 ````
 
@@ -212,8 +212,8 @@ local new_env = {print = print} --  a new env
 do
   local _ENV = strictness.strict(new_env) -- sets a new strict env for the do..end scope
   local function normal_f(value) some_var = value end -- our normal function
-  local sloppy_f = strictness.sloppy(normal_f) -- the sloppy version of our normal function 
-  sloppy_f(5) -- no longer produces error
+  local unstrict_f = strictness.unstrictf(normal_f) -- the non-strict version of our normal function 
+  unstrict_f(5) -- no longer produces error
   print(some_var) --> 5
 end
 ````
@@ -222,22 +222,22 @@ end
 
 ### <a name='combo'>Combo functions</a>
 
-*strictness* also provides two combo functions, `strictness.run_strictf` and `strictness.run_sloppyf`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and sloppy mode respectively.
-Syntactically speaking, `strictnes.run_strictf` is the equivalent to this:
+*strictness* also provides two combo functions, `strictness.run_strict` and `strictness.run_unstrict`. Those functions takes a function `f` plus an optional vararg `...` and return the result of the call `f(...)` in strict and non-strict mode respectively.
+Syntactically speaking, `strictnes.run_strict` is the equivalent to this:
 
 ```lua
 local strict_f = strictness.strictf(f)
 strict_f(...)
 ````
 
-While `strictness.run_sloppyf` is a short for:
+While `strictness.run_unstrict` is a short for:
 
 ```lua
-local sloppy_f = strictness.sloppyf(f)
-sloppy_f(...)
+local unstrict_f = strictness.unstrictf(f)
+unstrict_f(...)
 ````
 
-Here is an example for `strictness.run_strictf`:
+Here is an example for `strictness.run_strict`:
 
 ```lua
 local strictness = require 'strictness'
@@ -248,10 +248,10 @@ local env = {}  -- an environment
 local function normal_f(value)  some_var = value  end
 
 setfenv(normal_f, env) -- defines an env for normal_f
-strictness.run_strictf(normal_f, 3) --> produces an error
+strictness.run_strict(normal_f, 3) --> produces an error
 ````
 
-And another example with `strictness.run_sloppyf`:
+And another example with `strictness.run_unstrict``:
 
 ```lua
 local strictness = require 'strictness'
@@ -262,7 +262,7 @@ local env = strictness.strict()  -- a strict environment
 local function normal_f(value)  some_var = value  end
 
 setfenv(normal_f, env) -- defines an env for normal_f
-strictness.run_sloppyf(normal_f, 3) -- no error!
+strictness.run_unstrict`(normal_f, 3) -- no error!
 print(env.some_var, some_var) --> 3, nil
 ````
 
