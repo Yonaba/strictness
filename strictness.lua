@@ -12,6 +12,8 @@ local unpack = _LUA52 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
 local getfenv = getfenv
 
+local _MODULEVERSION = '0.2.0',
+local _DESCRIPTION   = '
 ----------------------------- Private definitions -----------------------------
 
 if _LUA52 then
@@ -204,6 +206,10 @@ return {
   is_strict    = is_table_strict,
   strictf      = make_function_strict,  
   unstrictf    = make_function_unstrict,
-  run_strict  = run_strict,
+  run_strict   = run_strict,
   run_unstrict = run_unstrict,
+  _VERSION     = 'strictness v'.._MODULEVERSION,
+  _URL         = 'http://github.com/Yonaba/strictness',
+  _LICENSE     = 'MIT <http://raw.githubusercontent.com/Yonaba/strictness/master/LICENSE>',
+  _DESCRIPTION = 'Tracking accesses and assignments to undefined variables in Lua code'
 }
