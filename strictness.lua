@@ -1,8 +1,9 @@
--- ==========================================
--- "strictness", a strict mode for Lua
--- Copyright (c) 2014 Roland Y., MIT License
--- v0.2.0 - compatible Lua 5.1, 5.2
--- ==========================================
+#!/usr/bin/env lua
+---------------
+-- ## strictness, a strict mode for Lua.
+-- @author Roland Yonaba
+-- @copyright 2013-2014
+-- @license MIT
 
 local _LUA52 = _VERSION:match('Lua 5.2')
 local setmetatable, getmetatable = setmetatable, getmetatable
@@ -80,7 +81,17 @@ end
 
 ------------------------------- Module functions ------------------------------
 
--- Makes a given table strict
+--- Makes a given table strict. It mutates the passed-in table (or creates a 
+-- new table) and returns it. The returned table is strict, indexing or 
+-- assigning undefined fields will raise an error.
+-- @name strictness.strict
+-- @param[opt] t a table
+-- @param[opt] ... a vararg list of allowed fields in the table.
+-- @return the passed-in table `t` or a new table, patched to be strict.
+-- @usage
+-- local t = strictness.strict()
+-- local t2 = strictness.strict({})
+-- local t3 = strictness.strict({}, 'field1', 'field2')
 local function make_table_strict(t, ...)
   t = t or {}
   local has_mt = getmetatable(t)
@@ -132,14 +143,24 @@ local function make_table_strict(t, ...)
   
 end
 
--- Checks if a given table was made strict.
+--- Checks if a given table is strict.
+-- @name strictness.is_strict
+-- @param t a table
+-- @return `true` if the table is strict, `false`otherwise.
+-- @usage
+-- local is_strict = strictness.is_strict(a_table)
 local function is_table_strict(t)
   complain_if(type(t) ~= 'table',
     ('Argument #1 should be a table, not %s.'):format(type(t)),3)
   return not not (getmetatable(t) and getmetatable(t).__strict)
 end
 
--- Makes a given table unstrict
+--- Makes a given table non-strict. It mutates the passed-in table and 
+-- returns it. The returned table is non-strict.
+-- @name strictness.unstrict
+-- @param t a table
+-- @usage
+-- local unstrict_table = strictness.unstrict(trict_table)
 local function make_table_unstrict(t)
   complain_if(type(t) ~= 'table',
     ('Argument #1 should be a table, not %s.'):format(type(t)),3)
@@ -156,8 +177,14 @@ local function make_table_unstrict(t)
   return t
 end
 
--- Makes a given function strict
--- Will run in strict mode whether or not its env is strict.
+--- Creates a strict function. Wraps the given function and returns the wrapper. 
+-- The new function will always run in strict mode in its environment, whether 
+-- or not this environment is strict.
+-- @name strictness.strictf
+-- @param f a function, or a callable value.
+-- @usage
+-- local strict_f = strictness.strictf(a_function)
+-- local result = strict_f(...)
 local function make_function_strict(f)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
@@ -171,8 +198,14 @@ local function make_function_strict(f)
   end
 end
 
--- Makes a given function unstrict
--- Will override strict rules of its env
+--- Creates a non-strict function. Wraps the given function and returns the wrapper. 
+-- The new function will always run in non-strict mode in its environment, whether 
+-- or not this environment is strict.
+-- @name strictness.unstrictf
+-- @param f a function, or a callable value.
+-- @usage
+-- local unstrict_f = strictness.unstrictf(a_function)
+-- local result = unstrict_f(...)
 local function make_function_unstrict(f)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
@@ -186,14 +219,24 @@ local function make_function_unstrict(f)
   end
 end
 
--- Returns the result of function call in strict mode in its env
+--- Returns the result of a function call in strict mode.
+-- @name strictness.run_strict
+-- @param f a function, or a callable value.
+-- @param[opt] ... a vararg list of arguments to function `f`.
+-- @usage
+-- local result = strictness.run_strict(a_function, arg1, arg2)
 local function run_strict(f,...)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
   return make_function_strict(f)(...)
 end
 
--- Returns the result of function call in non strict mode in its env
+--- Returns the result of a function call in non-strict mode.
+-- @name strictness.run_unstrict
+-- @param f a function, or a callable value.
+-- @param[opt] ... a vararg list of arguments to function `f`.
+-- @usage
+-- local result = strictness.run_unstrict(a_function, arg1, arg2)
 local function run_unstrict(f,...)
   complain_if(not callable(f),
     ('Argument #1 should be a callable, not %s.'):format(type(f)),3)
