@@ -40,7 +40,7 @@ or
 
 ## Documentation
 
-See [tutorial.md](docs/tutorial.md).
+See [tutorial.md](doc/tutorial.md).
 
 ##Tests
 
