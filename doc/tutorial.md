@@ -144,7 +144,7 @@ local env = {}  -- a blank environment for our functions
 
 -- A function that writes a varname and assigns it a value 
 local function normal_f(varname, value)
-  varname = value
+  env[varname] = value
 end
 -- Convert the original function to a strict one
 local strict_f = strictness.strictf(normal_f)
