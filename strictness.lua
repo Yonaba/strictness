@@ -62,7 +62,7 @@ local function validate_identifiers(...)
     complain_if(not is_identifier(iden),
       ('varname #%d "<%s>" is not a valid Lua identifier.')
         :format(i, tostring(iden)),4)
-  varnames[iden] = true
+    varnames[iden] = true
   end
   return varnames
 end
