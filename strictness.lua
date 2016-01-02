@@ -62,7 +62,7 @@ local function validate_identifiers(...)
     complain_if(not is_identifier(iden),
       ('varname #%d "<%s>" is not a valid Lua identifier.')
         :format(i, tostring(iden)),4)
-  varnames[iden] = true
+    varnames[iden] = true
   end
   return varnames
 end
@@ -102,7 +102,6 @@ local function make_table_strict(t, ...)
   complain_if(mt.__strict, 
     ('<%s> was already made strict.'):format(tostring(t)),3)
     
-  local varnames = v
   mt.__allowed = add_allowed_keys(t, validate_identifiers(...))
   mt.__predefined_index = mt.__index
   mt.__predefined_newindex = mt.__newindex
