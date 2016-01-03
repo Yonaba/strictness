@@ -3,7 +3,7 @@ language: erlang
 env:
   global:
     - PLATFORM=linux
-    - LUAROCKS_VER=2.2.0beta1
+    - LUAROCKS_VER=2.3.0-rc2
   matrix:
     - LUA=lua5.1
     - LUA=lua5.2
