@@ -3,7 +3,7 @@
 # Sets up Lua and Luarocks.
 # LUA must be "lua5.1", "lua5.2" or "luajit".
 # PLATFORM must be "linux" or "macosx".
-# Original written by Alexey Melnichuk <https://github.com/moteus>
+# Originally written by Alexey Melnichuk <https://github.com/moteus>
 
 if [ "$LUA" == "luajit" ]; then
   curl http://luajit.org/download/LuaJIT-2.0.2.tar.gz | tar xz
