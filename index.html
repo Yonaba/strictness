@@ -6,8 +6,8 @@
     <title>Strictness by Yonaba</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -29,45 +29,47 @@
       </header>
       <section>
         <h1>
-<a name="strictness" class="anchor" href="#strictness"><span class="octicon octicon-link"></span></a>strictness</h1>
+<a id="strictness" class="anchor" href="#strictness" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>strictness</h1>
 
 <p><a href="https://travis-ci.org/Yonaba/strictness"><img src="https://travis-ci.org/Yonaba/strictness.png" alt="Build Status"></a>
 <a href="https://coveralls.io/r/Yonaba/strictness?branch=master"><img src="https://coveralls.io/repos/Yonaba/strictness/badge.png?branch=master" alt="Coverage Status"></a>
+<a href=""><img src="https://img.shields.io/badge/Lua-5.1%2C%205.2%2C%205.3%2C%20JIT-blue.svg" alt="Lua"></a>
 <a href="LICENSE"><img src="http://img.shields.io/badge/Licence-MIT-brightgreen.svg" alt="License"></a></p>
 
 <p>With the <strong>Lua</strong> programming language, undeclared variables are not detected until runtime, as Lua will not complain when loading code.
 This is releated to the convention that Lua uses : <a href="http://www.lua.org/pil/1.2.html">global by default</a>. In other words, when a variable is not recognized as <em>local</em>, it will be
-interpreted as a <em>global</em> one, and will involve a lookup in the global environment <code>_G</code> (for Lua 5.1). Note that this behaviour has been addressed
-in Lua 5.2, which strictly speaking has no globals, because of its <a href="http://www.luafaq.org/#T8.2.1">lexical scoping</a>.</p>
+interpreted as a <em>global</em> one, and will involve a lookup in the global environment <code>_G</code> (for Lua 5.1). Note that this behaviour has been removed starting from Lua 5.2, which strictly speaking has no globals, because of its <a href="http://www.luafaq.org/#T8.2.1">lexical scoping</a>.</p>
 
 <p><em>strictness</em> is a module to track <em>access and assignment</em> to undefined variables in your code. It <em>enforces</em> to declare globals and modules variables before
 assigning them values. As such, it helps having a better control on the scope of variables across the code.</p>
 
-<p><em>strictness</em> is mostly meant to work with Lua <a href="http://www.lua.org/versions.html#5.1">5.1</a>, but it is compatible with Lua <a href="http://www.lua.org/versions.html#5.2">5.2</a>.</p>
+<p><em>strictness</em> is mostly meant to work with Lua <a href="http://www.lua.org/versions.html#5.1">5.1</a>, but it is compatible with newer versions of Lua.</p>
 
 <h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
 <h4>
-<a name="git" class="anchor" href="#git"><span class="octicon octicon-link"></span></a>Git</h4>
+<a id="git" class="anchor" href="#git" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Git</h4>
 
 <pre><code>git clone git://github.com/Yonaba/strictness
 </code></pre>
 
 <h4>
-<a name="download" class="anchor" href="#download"><span class="octicon octicon-link"></span></a>Download</h4>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h4>
 
 <ul>
 <li>See <a href="https://github.com/Yonaba/strictness/releases">releases</a>
 </li>
-</ul><h4>
-<a name="luarocks" class="anchor" href="#luarocks"><span class="octicon octicon-link"></span></a>LuaRocks</h4>
+</ul>
+
+<h4>
+<a id="luarocks" class="anchor" href="#luarocks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LuaRocks</h4>
 
 <pre><code>luarocks install strictness
 </code></pre>
 
 <h4>
-<a name="moonrocks" class="anchor" href="#moonrocks"><span class="octicon octicon-link"></span></a>MoonRocks</h4>
+<a id="moonrocks" class="anchor" href="#moonrocks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MoonRocks</h4>
 
 <pre><code>moonrocks install strictness
 </code></pre>
@@ -78,13 +80,12 @@ assigning them values. As such, it helps having a better control on the scope of
 </code></pre>
 
 <h2>
-<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
 
-<p>See Documentation : <a href="doc/html/index.html">strictness module</a>.</p>
-<p>See tutorial : <a href="http://github.com/Yonaba/strictness/blob/master/docs/tutorial.md">tutorial.md</a>.</p>
+<p>See <a href="doc/tutorial.md">tutorial.md</a>.</p>
 
 <h2>
-<a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tests</h2>
 
 <p>This project has specification tests. To run these tests, execute the following command from the project root folder:</p>
 
@@ -92,7 +93,7 @@ assigning them values. As such, it helps having a better control on the scope of
 </code></pre>
 
 <h2>
-<a name="similar-projects" class="anchor" href="#similar-projects"><span class="octicon octicon-link"></span></a>Similar projects</h2>
+<a id="similar-projects" class="anchor" href="#similar-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Similar projects</h2>
 
 <p>Feel free to check those alternate implementations, from with <em>strictness</em> takes some inspiration:</p>
 
@@ -101,10 +102,13 @@ assigning them values. As such, it helps having a better control on the scope of
 <a href="http://rtfc.googlecode.com/svn-history/r2/trunk/lua-5.1/etc/strict.lua">strict.lua</a> which is included in the official Lua 5.1 distribution,</li>
 <li>
 <a href="https://github.com/stevedonovan/Penlight/blob/master/lua/pl/strict.lua">pl.strict</a> which is part of <a href="https://github.com/stevedonovan/Penlight">Penlight</a>,</li>
-</ul><h2>
-<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+</ul>
 
-<p>This work is under <a href="http://www.opensource.org/licenses/mit-license.php">MIT-LICENSE</a><br><em>Copyright (c) 2013-2014 Roland Yonaba</em>.
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>This work is under <a href="http://www.opensource.org/licenses/mit-license.php">MIT-LICENSE</a><br>
+<em>Copyright (c) 2013-2014 Roland Yonaba</em>.
 See <a href="LICENSE">LICENSE</a>.</p>
 
 <p><a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/Yonaba/strictness/trend.png" alt="Bitdeli Badge"></a></p>
