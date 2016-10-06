@@ -131,7 +131,8 @@ test.assert_error('those subtables must be made strict explicitely', function() 
 
 print(decorate('Allowed fields in strict tables cannot be reserved keywords:'))
 for _,kword in ipairs(reserved) do
-  test.assert_error(('like "%s"'):format(kword), function() strictness.strict(nil, kword)end)
+	print('testing', kword)
+  test.assert_error(('like "%s"'):format(kword), function() strictness.strict(nil, kword) end)
 end
 
 print(decorate('Allowed fields in strict tables should be valid Lua identifiers:'))

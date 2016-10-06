@@ -6,20 +6,20 @@
 -- @copyright 2013-2014
 -- @license MIT
 
-local _LUA52 = _VERSION:match('Lua 5.2')
+local after_Lua_5_1 = _VERSION > ('Lua 5.1.5')
 local setmetatable, getmetatable = setmetatable, getmetatable
 local pairs, ipairs = pairs, ipairs
 local rawget, rawget = rawget, rawget
-local unpack = _LUA52 and table.unpack or unpack
+local unpack = after_Lua_5_1 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
 local getfenv = getfenv
 
-local _MODULEVERSION = '0.2.0'
+local _MODULEVERSION = '0.3.0'
 
 ----------------------------- Private definitions -----------------------------
 
-if _LUA52 then
-  -- Provide a replacement for getfenv in Lua 5.2, using the debug library
+if after_Lua_5_1 then
+  -- Provide a replacement for getfenv in Lua versions after 5.1.5, using the debug library
   -- Taken from: http://lua-users.org/lists/lua-l/2010-06/msg00313.html
   -- Slightly modified to handle f being nil and return _ENV if f is global.
   getfenv = function(f)
@@ -42,7 +42,7 @@ local is_reserved_keyword = {
   ['nil']      = true, ['not']   = true, ['or']    = true, ['repeat'] = true, 
   ['return']   = true, ['then']  = true, ['true']  = true, ['until']  = true,
   ['while']    = true,
-}; if _LUA52 then is_reserved_keyword['goto'] = true end
+}; if after_Lua_5_1 then is_reserved_keyword['goto'] = true end
 
 -- Throws an error if cond
 local function complain_if(cond, msg, level) 

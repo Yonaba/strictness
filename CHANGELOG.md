@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+###0.3.0 (06/10/16)
+* Made compatible with Lua 5.3
+
 ###0.2.0 (06/11/14)
 * `strictness` no longer create globals. It returns a local table of library functions.
 * `strictness` can now create (or convert) strict/unstrict tables (or environnements).
