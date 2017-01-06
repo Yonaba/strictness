@@ -9,7 +9,7 @@
 local after_Lua_5_1 = _VERSION > ('Lua 5.1.5')
 local setmetatable, getmetatable = setmetatable, getmetatable
 local pairs, ipairs = pairs, ipairs
-local rawget, rawget = rawget, rawget
+local rawget, rawset = rawget, rawset
 local unpack = after_Lua_5_1 and table.unpack or unpack
 local tostring, select, error = tostring, select, error
 local getfenv = getfenv
